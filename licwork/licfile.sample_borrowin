@@ -1,0 +1,31 @@
+# licfile examples:
+# 
+#  vender info: venderName must be the firstline
+
+venderName = geoeast
+clientName = bgp 
+serverName =   12345
+serverID = 9BD08696-595B1443-9431535B-5E5E297E 
+uuid = 699a6047-90e7-4f1d-b3d0-f377587362d6
+borrow = yes  #yes|no
+venderKey = 123
+
+# option:filenames
+
+venderpri = vender.pri
+venderpub = vender.pub
+venderseed =  0123456789  #10 length of string
+
+#  package info: packageName mush be the firstline version the 2nd
+
+packageName = pc1
+version  = 1.0
+# type: task|user|node
+type = task
+limit = 2
+pborrow = no  #
+startDate = 20170101
+endDate = 20250101
+key = 123
+ 
+

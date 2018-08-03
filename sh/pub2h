@@ -1,0 +1,13 @@
+#!/bin/tcsh -f
+echo $1
+if($1 == "") then
+	echo usage: pub2h pubfile
+        exit
+endif
+set fname = $1
+
+cat $fname | awk 'BEGIN{i= 0; print "      unsigned char pubkey[] = \\"} { lines[i]=  $0 ; i++}  \
+END{ for(v = 0; v < i ; v++) if( v != i-1) printf("      \"%s\\n\"\\\n",lines[v]); else printf("      \"%s\\n\";\n",lines[v]); }'
+#END{ for(v = 0; v < i ; v++) if( v != i-1) print "      \"",lines[v],"\\n\"\\"; else print "      \"",lines[v],"\\n\";" }'
+
+ 

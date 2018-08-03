@@ -1,0 +1,9 @@
+make install sh is in apps.pro
+when move to new env:
+	# add MB and stop firewall
+	route add -net 224.0.0.0 netmask 240.0.0.0 dev eth1
+	/etc/init.d/iptables stop
+
+	lic.sh
+	update licinclude.config for BUS BOOST HOME
+	updata comDefs.h for CAKEY file
