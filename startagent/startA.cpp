@@ -9,7 +9,9 @@
 #include "umServer.hpp"
 #include "licAgent.hpp"
 //#include "noServer.hpp"
-
+#include <tetris/device.hpp>
+#include <tetris/global_setting.hpp>
+#include <tetris/bus.hpp>
 int should_exit = 0;
 void sighandler (int /*signum*/)
 { should_exit = 1; }
@@ -59,6 +61,7 @@ int startServer (int argc, char* argv [])
 	unsigned short unicast_port = 0;
 	bool enhanced_security = false;
 	bool debug_mode = false;
+  #if 0
 	while ((o = getopt (argc, argv, "uscp:ed")) != -1) {
 		switch (o) {
 		case 'u': attach_um = 1; break;
@@ -70,7 +73,26 @@ int startServer (int argc, char* argv [])
 		default: break;
 		}
 	}
+#endif
+	string tetris_root;
+	string c_id_str;
+	int un_useP;
+	//X509* ca_cert;
+	tetris::device * device_ptr;
+	string cacert_file,device_conf_file,user_conf_file,device_cert_file,device_key_file;
+	Json::Value bus_options;
 
+
+	/* process the command line options ,and store in bus_options,c_id_str is set by --device*/
+	if(global::parseOptions(argc,argv,bus_options,tetris_root,c_id_str,un_useP)!=0){
+		TETRIS_ERROR("Error: Cannot parse options.");
+		return -1;
+	}
+	cacert_file = tetris_root+CACERT_FILE;
+	device_conf_file = tetris_root+DEVICE_CONF_FILE;
+	user_conf_file = tetris_root+USER_CONF_FILE;
+	device_cert_file = tetris_root+DEVICE_CERT_FILE;
+	device_key_file = tetris_root+DEVICE_KEY_FILE;
 
 	/* init the openssl library */
 	OpenSSL_add_all_algorithms ();
@@ -82,11 +104,12 @@ int startServer (int argc, char* argv [])
 	/* load the root certificate/private key */
 	//string a1="/home/geoeast/lg/NGC/chen/tetris/src/third/ca/cacert.pem";
        // string a1="/home/cjh/tetris/tetris/src/third/ca/cacert.pem";
-        string a1 = CA_CERT;
-	if (!(ca_cert = tetris::pki::load_cert (a1))) {
+        cacert_file = CA_CERT;
+	if (!(ca_cert = tetris::pki::load_cert (cacert_file))) {
 		printf ("failed to load the root cert\n");
 		exit (-1);
 	}
+ 
 
 	//if (!(ca_private_key = tetris::pki::load_private_key ("/home/geoeast/lg/NGC/chen/tetris/src/third/ca/cakey.pem"))) {
         if (!(ca_private_key = tetris::pki::load_private_key (CA_KEY))) {
@@ -102,6 +125,9 @@ int startServer (int argc, char* argv [])
         string serverid;
         serverid = LIC_AGENT_ID;
 
+        cout<<"serverid =   " << serverid <<"up=" << un_useP<< endl;
+        cout<<"c_id_str =   " << c_id_str<< endl;
+        if (!c_id_str.empty())  serverid = c_id_str;
         cout<<"serverid =   " << serverid << endl;
 
 	if ((!generate_credential_data ("1:0:0:0", &um_cert, &um_key))
@@ -115,7 +141,7 @@ int startServer (int argc, char* argv [])
 //	tetris::pki::save_private_key(server_key,"/tmp/key/11:0:0:0");
 
 	cout<<"xxx"<<endl;
-	bool ok111=tetris::pki::samepair(um_cert,um_key);
+	bool ok111=tetris::pki::samepair(um_cert,um_key); 
 	cout<<"verify result===="<<ok111<<endl;
 	string path="/tmp/cert";
 	string path1="/tmp/key";
@@ -129,7 +155,7 @@ int startServer (int argc, char* argv [])
 
 	if (bus == NULL)
 		exit (-1);
-	Json::Value bus_options;
+	//Json::Value bus_options;
         unicast_port = AGENT_PORT;
 
 	if (unicast_port != 0)

@@ -267,7 +267,7 @@ IMPLEMENT_DEVICE_METHOD(LicAgent,logoutApp)
     int ir;
     SAppInfo info;
     JsonParser jp(params),jr;
-    qDebug() << "==================in server logOut parms = " << params[APP_PID].asString().c_str();
+    qDebug() << "==================in agent logOut parms = " << params[APP_PID].asString().c_str();
 //in
     info.set(APP_VENDER,jp.get(APP_VENDER));
     info.set(APP_PACKAGE,jp.get(APP_PACKAGE));
