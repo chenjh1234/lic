@@ -127,6 +127,7 @@ int LimitConfig::doRemove(int ty, QMap<QString, LimitData *>& who)
    if (ty == DO_SET_REMOVE) qDebug() << "setRemove =" << sz <<  slist;
    if (ty == DO_CLEAR_REMOVED) qDebug() << "clearRemoved =" << sz <<  slist;
 
+   _lock.lock();
 
    for (i = 0; i < sz; i++)
    {
@@ -156,6 +157,8 @@ int LimitConfig::doRemove(int ty, QMap<QString, LimitData *>& who)
       }
       else qDebug() << " Error: LiniteData is NULL name =  " << name;
    }
+
+   _lock.unlock();
    return DSTAT_OK;
 }
 

@@ -20,7 +20,7 @@ LIBS += \
 	   SAppInfo.h \
 	   SPackMng.h \
 	   SPackInfo.h \
-	   SCycleThread.h \
+#	   SCycleThread.h \
 	   SLog.h 
  
 
@@ -31,8 +31,9 @@ LIBS += \
 	   SPackInfo.cpp \
 	   SPackMng.cpp \
 	   SLicData.cpp \
-	   SCycleThread.cpp \
+#	   SCycleThread.cpp \
 	   DBstat.cpp\
+	   SAgent.cpp\
 	   SLog.cpp 
  
  
@@ -41,7 +42,7 @@ LIBS += \
 # below is for install:  / is important we must install from /
 APPLIC.path +=/$${LIC_ROOT_PATH}/file
 APPLIC.files = ../apps/apps.cpp ../apps/apps.pro ../licwork/licfile.sample ../apps/licdev.pdf ../apps/licgen.pdf ../apps/stjob.pdf \
-	../licwork/* ../licconfig/lictest.conf
+	../licwork/* ../testconfig/lic.conf  
 INSTALLS +=APPLIC
 
 SH.path +=/$${LIC_ROOT_PATH}/bin

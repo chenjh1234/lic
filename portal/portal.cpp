@@ -173,6 +173,7 @@ void tetris_service_gateway::processRestfulCall(void) {
        	x_os << x;
        	string body_string=x_os.str();
        	string method;
+        string agent;
         
 
        	Json::Reader reader;
@@ -190,20 +191,33 @@ void tetris_service_gateway::processRestfulCall(void) {
        		return crow::response{"ERROR: Not supported Method"};
        		}
 
-       	tetris::device::id the_server(lm_id);
-        cout << "server id = " << lm_id << method<<endl ;
-        method = body_json["params"]["url"].asString();
+   
+        
+//agent:// get divice id from param"agent"
+        string lm_idd;
+        lm_idd = lm_id;
+        agent = params["licagent"].asString();
+        if (!agent.empty()) lm_idd= agent;
+//device: licServer or licAgent
+        tetris::device::id the_server(lm_idd);
 
+        cout << "server id = " << lm_id << lm_idd << agent << method<<endl ;
+// method:
+
+        method = body_json["params"]["url"].asString();
+// notify or call:
         if (params["notify"].asString() =="yes")  
         {
-            d->hp->notify(the_server, 0, method, params, string(), CMD_TIMEOUT); 
+            d->hp->notify(the_server, 0, method, params, string(), tetris::second_10); 
             result["status"] = "OK";
+            cout << "result of call = " << result.toStyledString().c_str() << endl;
             return crow::response{result.toStyledString()};
         }
-         else
+        else
         {
-            d->hp->call(the_server, 0, method, params, string(), CMD_TIMEOUT, result); 
+            d->hp->call(the_server, 0, method, params, string(), tetris::second_10,result); 
             TETRIS_DEBUG("lm/call result = %s", result.toStyledString().c_str());
+             cout << "result of call = " << result.toStyledString().c_str() << endl;
             return crow::response{result.toStyledString()};
         }
  

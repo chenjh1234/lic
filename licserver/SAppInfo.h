@@ -21,7 +21,9 @@
 // for return:
 #define APP_VENDERSIGN "vendersign"
 #define APP_PBORROW "pborrow"
+// options
 #define APP_LICPROJECT "licproject"
+#define APP_AGENT "licagent"
 
 
 //#define APP_RET "ret"
@@ -52,6 +54,8 @@ public:
     int encode(QDataStream& ds);
     int decode(QDataStream& ds);
     bool isExpired(long intvs);
+    QString encodePackageID();
+    QString encodeAppID();
     QString packid;// vender+package+version
     QString appid;// ip+pid;
     QString user;// ip+pid;

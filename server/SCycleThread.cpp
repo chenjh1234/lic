@@ -142,9 +142,9 @@ void SCycleThread::runAgent()
             break;
         }
         //HB:
-        runHB();
-        rHB.wait();
-        qDebug() << "HB OK"<< lfd.sEP()<<lfd.curDT();
+       runHB();
+       rHB.wait();
+      //  qDebug() << "HB OK"<< lfd.sEP()<<lfd.curDT();
         // dbsave: 
         if (lfd.sEP() - _dbSave >= DB_SAVE_INT) 
         {
@@ -280,13 +280,8 @@ void runThread::runAgent()
     ilist << lfd.sEP() - stt;
     //return;
 #endif
-
-    if (_who == HEARTBEAT_INT) 
-    {
-        i = mng.checkHB(HEARTBEAT_INT);
-    }
     #if 1
-    else if (_who == DB_SAVE_INT) 
+    if (_who == DB_SAVE_INT) 
     {
         i = mng.saveDB();   
         mng._config.saveDB();    

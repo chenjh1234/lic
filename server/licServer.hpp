@@ -52,12 +52,12 @@ private:
         DECLARE_DEVICE_METHOD (logoutApp);//7
         DECLARE_DEVICE_METHOD (heartBeat);//8
         DECLARE_DEVICE_METHOD (borrow);//9
-        DECLARE_DEVICE_METHOD (borrowReturn);//20
+        DECLARE_DEVICE_METHOD (borrowReturn);//10
         DECLARE_DEVICE_METHOD (report);//11
         DECLARE_DEVICE_METHOD (shutDown);//12
-        DECLARE_DEVICE_METHOD (loadConfig);//12
-        DECLARE_DEVICE_METHOD (viewConfig);
-        DECLARE_DEVICE_METHOD (clearConfig);
+        DECLARE_DEVICE_METHOD (loadConfig);//13
+        DECLARE_DEVICE_METHOD (viewConfig);//14
+        DECLARE_DEVICE_METHOD (clearConfig);//15
         //
         //DECLARE_DEVICE_METHOD (checkUUID);
     // real interfase end:

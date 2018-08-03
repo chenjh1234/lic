@@ -8,18 +8,24 @@
 
 #define CA_CERT "/home/cjh/tetris/src/third/ca/cacert.pem"
 #define CA_KEY  "/home/cjh/tetris/src/third/ca/cakey.pem"
+
+#define CA_CERT "/home/cjh/ca/cacert.pem"
+#define CA_KEY  "/home/cjh/ca/cakey.pem"
 //env:
 //LIC_ROOT_PATH
 // env for client:
+#define ENV_LIC_AGENT "LIC_AGENT" // is the agent device ID "5:0:1:0" is is not NULL will login to agent device
 #define ENV_PORTAL_IP "PORTAL_IP"   // if exist Noserver will connect portal
 #define ENV_PORTAL_PORT "PORTAL_PORT"
 #define ENV_LIC_PROJECT "LIC_PROJECT"
 #define PORTAL_IP "localhost"
 #define PORTAL_PORT "18080"
 #define PORTAL 1 
+#define AGENT_PORT 38080
 // portal:
 #define CALL_NOTIFY "notify" // tell potal to start notify;
 #define LIC_URL "lm"
+#define LICA_URL "lma"
 //command:
 #define CMD_LOADFILE "loadFile"
 #define CMD_UNLOADFILE "unloadFile"
@@ -36,10 +42,16 @@
 #define CMD_VIEWCONFIG "viewConfig"
 #define CMD_CLEARCONFIG "clearConfig"
 
+#define CMD_VIEWAGENT "viewAgent"
+
+#define CMD_TIMEOUT boost::posix_time::time_duration (0,0,30)
+
 //#define CMD_CHECKUUID "checkUUID"
 #define CMD_HELLO "hello"
 
 #define CMD_NUMBERS 15
+#define CMD_AGENT 9
+
 #define LIC_SERVER_ID  "5:0:0:0"
 #define LIC_AGENT_ID  "5:0:1:0"
 

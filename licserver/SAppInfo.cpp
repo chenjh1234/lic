@@ -34,13 +34,40 @@ int SAppInfo::appHB()
 }
 bool SAppInfo::checkHB(long intvs)
 {
-    if(hbstat ==0)
+    QString s;
+    s = get(APP_AGENT).toString();
+    qDebug() << "app agent check s =" << s;
+    if (!s .isEmpty())  return false; //  donot checkHB:    is agent  check HB
+
+    if (hbstat == 0) 
     {
         hbstat = fd.sEP();
     }
 
     if (fd.sEP() - hbstat >= intvs ) return true;
     else return false;
+}
+QString SAppInfo::encodePackageID()
+{
+   QString str, dl;
+   QString package,version,vender;
+   vender = get(APP_VENDER).toString();
+   package = get(APP_PACKAGE).toString();
+   version  = get(APP_VERSION).toString();
+   dl = "_";
+   str = vender + dl + package + dl +   version;
+   return str;
+}
+ 
+QString SAppInfo::encodeAppID()
+{
+   QString ip,pid;
+   QString str, dl;
+   pid = get(APP_PID).toString();
+   ip = get(APP_IP).toString();
+   dl = "_";
+   str = ip + dl + pid;
+   return str;
 }
 int SAppInfo::encode(QDataStream& ds)
 {

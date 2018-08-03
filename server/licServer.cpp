@@ -340,6 +340,7 @@ IMPLEMENT_DEVICE_METHOD(LicServer,loginApp)
     info.set(APP_NAME,jp.get(APP_NAME));
     info.set(APP_USER,jp.get(APP_USER));
     info.set(APP_PID,jp.get(APP_PID));
+    info.set(APP_AGENT,jp.get(APP_AGENT));
 
     info.set(APP_LICPROJECT,jp.get(APP_LICPROJECT));
      

@@ -83,7 +83,8 @@ QString  SLicMng::getAppID(SAppInfo &msg)
     info = &msg;
      pid = info->get(APP_PID).toString();
      ip = info->get(APP_IP).toString();   
-     appid = data-> encodeAppId( ip,  pid);
+    // appid = data-> encodeAppId( ip,  pid);
+     appid = info->encodeAppID();
      return appid;
 }
 QString  SLicMng::getPackID(SAppInfo &msg)
@@ -100,7 +101,8 @@ QString  SLicMng::getPackID(SAppInfo &msg)
      ip = info->get(APP_IP).toString();   
      user = info->get(APP_USER).toString();
      licproject  = info->get(APP_LICPROJECT).toString();
-     packid = data->encodePackageId(vender, package, version);
+     //packid = data->encodePackageId(vender, package, version);
+     packid = info->encodePackageID();
      return packid;
 }
 bool SLicMng::isLoginConfig(SAppInfo &msg)
@@ -117,7 +119,8 @@ bool SLicMng::isLoginConfig(SAppInfo &msg)
        ip = info->get(APP_IP).toString();   
        user = info->get(APP_USER).toString();
        licproject  = info->get(APP_LICPROJECT).toString();
-       packid = data->encodePackageId(vender, package, version);
+       //packid = data->encodePackageId(vender, package, version);
+       packid = info->encodePackageID();
 
        node = ip;
        i = data->_config.login(packid,user,node,licproject,number);
@@ -139,7 +142,8 @@ bool SLicMng::isLogoutConfig(SAppInfo &msg)
        ip = info->get(APP_IP).toString();   
        user = info->get(APP_USER).toString();
        licproject  = info->get(APP_LICPROJECT).toString();
-       packid = data->encodePackageId(vender, package, version);
+      // packid = data->encodePackageId(vender, package, version);
+       packid = info->encodePackageID();
 
        node = ip;
        i = data->_config.unlogin(packid,user,node,licproject,number);
@@ -251,6 +255,7 @@ int SLicMng::loadFile(QString filename)
    if (i < 0)
    {
       err = "load file error: " + mapLoadFile[i] + " " + filename;
+      
       data->plog(err);
    }
    return i;
@@ -280,7 +285,9 @@ int SLicMng::loadLic(QString filename, int mode)
    QString str, venderKey, pKey, venderSign, uuid, smid, venderName, borrow;
    bool b;
    //num = checkLicFile(filename, serverPri);
+   qDebug() << "loadfile = " << filename;
    num = checkLic(filename, mode);
+   qDebug() << "num = " << num;
    if (num <= 0)  return num;
 
 // readfile:
@@ -339,6 +346,7 @@ int SLicMng::loadLic(QString filename, int mode)
       //qDebug() << "info ===" <<  infoSP->getText();
 
       packid = data->encodePackageId(venderName, pname, version);
+      //packid = info->encodePackageID();
       // qDebug() << "000000=" ;
       infoSP->packid = packid;
       infoSP->setStat();

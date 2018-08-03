@@ -236,6 +236,9 @@ int HttpClient::Post(const std::string & strUrl, const std::string & strPost, st
 {
 	CURLcode res;
 	CURL* curl = curl_easy_init();
+        cout <<"strURL =" << strUrl << endl;
+        cout << "strPost = " << strPost << endl;
+        cout << " inPOST init = = " << curl <<endl;
 	if(NULL == curl)
 	{
 		return CURLE_FAILED_INIT;
@@ -254,6 +257,8 @@ int HttpClient::Post(const std::string & strUrl, const std::string & strPost, st
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2);
 	curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "/tmp/curlposttest.cookie");
 	res = curl_easy_perform(curl);
+        cout << "CURLE_OK = " << CURLE_OK << endl;
+        cout << "res = " << res << endl;
 
 	if (res != CURLE_OK)
 	{

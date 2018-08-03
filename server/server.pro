@@ -6,15 +6,14 @@ DESTDIR =$${LIC_LIB}
 TARGET = licserverdev
 
 INCLUDEPATH += $${INCLUDE_BUS}
-INCLUDEPATH += $${INCLUDE_UTIL}
+INCLUDEPATH += $${INCLUDE_SERVER}
 
-
-#LIBS +=  $${LIBS_BUS}
-#LIBS +=  $${LIBS_APP}  
  
-HEADERS +=   \
-	 licServer.hpp
+#HEADERS +=   \
+#	 licServer.hpp
  
 SOURCES +=  \
+	SCycleThread.cpp\
+	    licAgent.cpp\
 	    licServer.cpp 	 
 	    

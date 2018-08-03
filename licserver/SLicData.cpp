@@ -2,38 +2,72 @@
 
 SLicData ::SLicData()
 {
-   QString str;
-   str = curLogName(ELOG);
-   _elog.setFile(str);
-   str = curLogName(ALOG);
-   _alog.setFile(str);
-   str = curLogName(PLOG);
-   _plog.setFile(str); 
-   setCheckUUID(true);
-   _config.setDbFile(getDBConfigFile());
-
-   // load db
-#if 0
-   _elog<< "1234567"<<endl;
-   QString s;
-   s = "56789111";
-   _elog.tline("9999999");
-   _elog.ts(s);
-   s = "567890";
-   elog(s);
-   //_elog<< "1234567----"<<endl;
-#endif
-
+        setCheckUUID(true);
+        openLog();
 }
 SLicData::~SLicData()
 {
+       closeLog();
    qDebug() << " =======end of licData=======";
+}
+bool SLicData::startup()
+{
+    init(); //log,configName;
+    QString str;
+    int i;
+    _config.loadDB();
+    i = loadDB();
+    if (i <=0 ) 
+    {
+        i = loadDBPackage();
+        if(i <= 0) return false;
+        str = "load DB from DBPackage OK !!!!!";
+        qDebug() << str;
+        plog(str);
+    }
+    else
+    {
+        str = "load DB from DB OK!!!!!";
+        qDebug() << str;
+        plog(str);
+    }
+
+    return true;
+}
+void SLicData::down()
+{
+    //cyc.setDown();
+    qDebug() << "down the licdata";
+    saveDB();
+    _config.saveDB();
+ 
+}
+
+void SLicData::init()
+{
+
+    
+   _config.setDbFile(getDBConfigFile());
+}
+void SLicData::closeLog()
+{
    _elog.close();
    _plog.close();
    _alog.close();
 }
 // ===================pack ===========
+void SLicData::openLog()
+{
 
+    QString str;
+    str = curLogName(ELOG);
+    _elog.setFile(str);
+    str = curLogName(ALOG);
+    _alog.setFile(str);
+    str = curLogName(PLOG);
+    _plog.setFile(str); 
+
+}
 int SLicData::packSize()
 {
    return mapPack.size();
@@ -245,16 +279,21 @@ int SLicData::addPackage(SPackInfo *info) // base add
    {
       qDebug() << "addPackage no= " << packid;
       mng = new SPackMng();
+      qDebug() << " mng = " << mng;
       i = mng->addInfo(info);
    }
    // add to map:
+   qDebug() << "after add mng = " << mng;
    mapPack[packid] = mng;
    // unlock:
    _lockPack.unlock();
    //if (i <=0 ) info->err = "addPackage err";
    info->ret = i;
+  //qDebug() << "plog";
    plog(info, "addPackage");
+   //  qDebug() << "plog ret =" << i;
    if (i > 0)  i = saveDBPackage();
+   qDebug() << "after saveDBPack";
    return i;
 
 }
@@ -1109,11 +1148,13 @@ int SLicData::addApp(SAppInfo& ainfo)
    //qDebug() << "packid00=" << vender << package << version ;
    qDebug() << "info=" << info->getText();
    // qDebug() << "ainfo=";// << ainfo.getText();
-   packid = encodePackageId(vender, package, version);
+   //packid = encodePackageId(vender, package, version);
+   packid = info->encodePackageID();
 
    info->packid = packid;
    info->number = number;
-   info->appid = encodeAppId(ip, pid);
+  // info->appid = encodeAppId(ip, pid);
+   info->appid = info->encodeAppID();
    info->user = user;
    info->nameid = info->appid;
    info->start = fd.sEP();
@@ -1196,11 +1237,13 @@ int SLicData::rmApp(SAppInfo& ainfo)
    //qDebug() << "packid00=" << vender << package << version ;
    // qDebug() << "info=" << info->getText();
    // qDebug() << "ainfo=" << ainfo.getText();
-   packid = encodePackageId(vender, package, version);
+  // packid = encodePackageId(vender, package, version);
+   packid = info->encodePackageID();
 // packid,appid
    info->packid = packid;
    info->number = number;
-   info->appid = encodeAppId(ip, pid);
+  // info->appid = encodeAppId(ip, pid);
+   info->appid = info->encodeAppID();
    info->nameid = info->appid;
 
    _lockApp.lock();
@@ -1251,15 +1294,18 @@ int SLicData::rmApp(SAppInfo& ainfo)
 void SLicData::plog(SPackInfo *info, QString fun)
 {
    QString str;
+   qDebug() << "ret = " << info->ret;
    if (info->ret <= 0)
    {
 
       str = "Error:" +  info->packid + ":" + info->err;
+      qDebug() << "plogerr=" << str;
       _plog.ts(str);
    }
    else
    {
       str =  fun + " OK:" + info->packid + " " + info->get(PTYPE).toString() + " " + info->get(PLIMIT).toString() + " " + info->get(PSTARTDATE).toString() + " " + info->get(PENDDATE).toString() + " " + info->get(UUID).toString();
+      qDebug() << "plogok=" << str;
       _plog.ts(str);
    }
 }
@@ -2112,15 +2158,17 @@ int SLicData::appHB(SAppInfo& app)
    pid = info->get(APP_PID).toString();
    user = info->get(APP_USER).toString();
 
-   packid = encodePackageId(vender, package, version);
+   //packid = encodePackageId(vender, package, version);
+   packid = info->encodePackageID();
    mng = appMng(packid);
    QString appid;
 
-   appid = encodeAppId(ip, pid);
+   //appid = encodeAppId(ip, pid);
+   appid = info->encodeAppID();
 
    info = NULL;
-   info = (SAppInfo *)mng->get(appid);
-
+   if (mng !=NULL)  
+          info = (SAppInfo *)mng->get(appid);
    if (info != NULL)  return info->appHB();
    else return -1;
 
@@ -2438,37 +2486,4 @@ void SLicData::setCheckUUID(bool b)
 bool SLicData::isCheckUUID()
 {
    return _checkUUID;
-}
-bool SLicData::startup()
-{
-    //cyc.start();
-    QString str;
-    int i;
-    _config.loadDB();
-
-    i = loadDB();
-    if (i <=0 ) 
-    {
-        i = loadDBPackage();
-        if(i <= 0) return false;
-        str = "load DB from DBPackage OK !!!!!";
-        qDebug() << str;
-        plog(str);
-    }
-    else
-    {
-        str = "load DB from DB OK!!!!!";
-        qDebug() << str;
-        plog(str);
-    }
-
-    return true;
-}
-void SLicData::down()
-{
-    //cyc.setDown();
-    qDebug() << "down the licdata";
-    saveDB();
-    //cyc.join();
-
 }

@@ -4,15 +4,21 @@ void NoServer::init()
    LEncrypt en;
     
    _ip = en.getIP().c_str();
+   qDebug() <<"ip = " << _ip;
    _user =  en.getUser().c_str();
    _hostname =  en.getHostname().c_str();
    _pid =  en.getPID().c_str();
    _licproject = getenv(ENV_LIC_PROJECT);
    if (_licproject.isEmpty())  _licproject = "null";
+   _licAgent = "";
+   _licAgent = getenv(ENV_LIC_AGENT);
    _devServer = NULL; 
    hbTH = NULL;
    setPortal(0);
-   setDev(QString(LIC_SERVER_ID));
+   if (isAgent())  
+       setDev(_licAgent);
+   else      
+       setDev(QString(LIC_SERVER_ID));
 
 }
 NoServer::~NoServer()
@@ -59,6 +65,10 @@ bool  NoServer::isPortal()
 {
     return _portal;
       
+}
+bool NoServer::isAgent()
+{
+    return !_licAgent.isEmpty();
 }
 bool NoServer::startup(helpers *hp)
 {
@@ -153,6 +163,10 @@ void NoServer::shutDown()
    ir = -1;
    jp.set(CMD_PARAM, licStr);
    jp.set(CALL_NOTIFY,"yes");
+      if (isAgent()) 
+   {
+        jp.set(APP_AGENT, _licAgent);
+   }
    params = jp.getJ();
   
    qDebug() << "shutDown parms = " << params[CMD_PARAM].asString().c_str();
@@ -178,6 +192,10 @@ int NoServer::loadConfig(QString filename)
       return -1;
    }
    jp.set(CMD_PARAM, licStr);
+   if (isAgent()) 
+   {
+        jp.set(APP_AGENT, _licAgent);
+   }
    params = jp.getJ();
    //qDebug() << "licStr = " << licStr;
    qDebug() << "load config parms = " << params[CMD_PARAM].asString().c_str();
@@ -216,6 +234,11 @@ int NoServer::clearConfig(QString passwd)
       return -1;
    }
    jp.set(CMD_PARAM, passwd);
+   if (isAgent()) 
+   {
+        jp.set(APP_AGENT, _licAgent);
+   }
+
    params = jp.getJ();
    //qDebug() << "licStr = " << licStr;
    qDebug() << "load config parms = " << params[CMD_PARAM].asString().c_str();
@@ -245,6 +268,8 @@ QStringList NoServer::viewConfig(QString pack)
 // params:
 
    jp.set(CMD_PARAM, pack);
+   if (isAgent())  
+       jp.set(APP_AGENT, _licAgent); 
    params = jp.getJ();
    //qDebug() << "licStr = " << licStr;
    qDebug() << "view  config parms = " << params[CMD_PARAM].asString().c_str();
@@ -253,10 +278,59 @@ QStringList NoServer::viewConfig(QString pack)
    hp->call(the_server, 0, CMD_VIEWCONFIG, params, string(),CMD_TIMEOUT, result);
    //cout << "hp->call loadfile  result=" << result.toStyledString() << endl;
    jr.setJ(result);
-// result:
-   qDebug() << "viewConfig ret status = "  << result[RET_STATUS].asString().c_str();
-   ret = result[RET_MESSAGE].asString().c_str();
-   slist = ret.split("\n");
+   qDebug() << "viewConfig status = "  << result[RET_STATUS].asString().c_str();
+   // result:
+  if (jr.get(RET_STATUS) == QString(RET_OK))
+  {   
+      ret = result[RET_MESSAGE].asString().c_str();
+      slist = ret.split("\n");
+  }
+  else
+  {
+      slist << "Error : get Config  error!!\n";
+  }
+
+   return slist;
+
+}
+QStringList NoServer::viewAgent(QString pack)
+{
+   Json::Value params, result;
+   JsonParser jp, jr;
+  QString ret;
+  QStringList slist;
+// params:
+
+   jp.set(CMD_PARAM, pack);
+
+   //qDebug() << "licStr = " << licStr;
+   qDebug() << "view  agent parms = " << params[CMD_PARAM].asString().c_str();
+   if (!isPortal() || !isAgent() ) 
+   {
+       slist << "Error : we can only use viewagent with portal & connect to licAgent!!";
+       return slist;
+   }
+
+    jp.set(APP_AGENT, _licAgent);
+    params = jp.getJ();
+// call;
+    HTTP_CLIENT_START(CMD_VIEWAGENT)
+   hp->call(the_server, 0, CMD_VIEWAGENT, params, string(),CMD_TIMEOUT, result);
+   //cout << "hp->call loadfile  result=" << result.toStyledString() << endl;
+   jr.setJ(result);
+    qDebug() << "viewAgent status = "  << result[RET_STATUS].asString().c_str();
+    // result:
+   if (jr.get(RET_STATUS) == QString(RET_OK))
+   {   
+       ret = result[RET_MESSAGE].asString().c_str();
+       slist = ret.split("\n");
+   }
+   else
+   {
+       slist << "Error : get Agent error!!\n";
+   }
+  
+
    return slist;
 
 }
@@ -459,7 +533,10 @@ QStringList NoServer::loginApp(QString vender, QString packName, QString version
    jp.set(APP_PID, pid);
 
    jp.set(APP_LICPROJECT, _licproject);
-
+   if (isAgent()) 
+   {
+        jp.set(APP_AGENT, _licAgent);
+   }
    params = jp.getJ();
    qDebug() << " login app param=" << params.toStyledString().c_str();
 
@@ -528,6 +605,11 @@ int NoServer::logoutApp(QString vender, QString packName, QString version)
    //jp.set(APP_USER,user);
    jp.set(APP_PID, pid); 
    jp.set(APP_LICPROJECT, _licproject);
+
+   if (isAgent()) 
+   {
+        jp.set(APP_AGENT, _licAgent);
+   }
 
    params = jp.getJ();
    
@@ -608,6 +690,10 @@ void NoServer::heartBeat(QString vender, QString packName, QString version)
    // jp.set(APP_NAME,appname);
    jp.set(CALL_NOTIFY,"yes");
    jp.set(APP_PID, pid);
+    if (isAgent()) 
+   {
+        jp.set(APP_AGENT, _licAgent);
+   }
    params = jp.getJ();
 
    qDebug() << " heartBeat app param=" << params.toStyledString().c_str();

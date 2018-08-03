@@ -197,7 +197,9 @@ public:
 
     
 
-
+    void init();
+    void openLog();
+    void closeLog();
 // log :
     void plog(SPackInfo *info,QString str ="");
     void plog(QString s);

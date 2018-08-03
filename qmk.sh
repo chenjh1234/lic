@@ -27,14 +27,17 @@ echo  property
 cd ../property
 qmake
 echo ======= apps-test =======
-echo  licdev
-cd ../licdev
-qmake
 echo  testlic
 cd ../testlic
 qmake
 echo  tsetapi
 cd ../testapi
+qmake
+echo testagentapi
+cd ../testagentapi
+qmake
+echo testagent
+cd ../testagent
 qmake
 echo =======utils =======
 # util----------------------
@@ -104,6 +107,9 @@ qmake
 echo clearconfig
 cd ../clearconfig
 qmake
+echo viewagent
+cd ../viewagent
+qmake
 #--------// end of util
 echo ======= apps-test =======
 echo apps
@@ -111,6 +117,12 @@ cd ../../apps
 qmake
 echo portal
 cd ../portal
+qmake
+echo startagent
+cd ../startagent
+qmake
+echo  licdev
+cd ../licdev
 qmake
 
 

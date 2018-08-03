@@ -5,8 +5,7 @@
 #define CONFIG_REM_CHAR "#"
 #define CONFIG_SEP_CHAR ":"
 #define CONFIG1_SEP_CHAR ","
-
-#define CONFIG_DB_FILE "config.db"
+ 
 #define CONFIG_PACKID "package"
 
 #include "LimitData.h"
@@ -44,6 +43,7 @@ public:
     int clear();
 // view
     QString view(QString pack = "" ,QString item="",QString name = "");    
+
  
 
 private:
@@ -53,6 +53,7 @@ private:
     int  readItem(int ty,QString text,QStringList packList,int limit);
     int readStream(QTextStream *in);
     QString _fileConfig;
+
 
 
 };

@@ -38,7 +38,7 @@
  
 
 
-#define CMD_TIMEOUT boost::posix_time::time_duration (0,0,30)
+
  
 class HbThread;
 
@@ -53,50 +53,61 @@ public:
 			count(0)
 	{init();};
       ~NoServer();
-      void startHB();
-      void endHB();
+
       void init();
+ //loadfiles:
       int loadFile(QString filename);
       int loadConfig(QString filename);
-      QStringList viewConfig(QString pack="");
       int clearConfig(QString passwdtoday);
       int unloadFile(QString filename,QString proofFile);
-
+// load unload pack:
       QString unloadPackage(QString vender,QString pack,QString version,int number=0,QString ty="",QString uuid = "");
       QString removePackage(QString vender,QString pack,QString version,int number,QString ty ,QString uuid ,QString pass);
-
+//login logout:
       QStringList loginApp(QString vender,QString packName,QString version,int number=1,QString appname="");
       int logoutApp(QString vender,QString packName,QString version);
       int logoutApp();
+// HB
+      void startHB();
+      void endHB();
       void heartBeat(QString vender,QString packName,QString version);
       void heartBeat();
-      int borrow(QString filein,QString fileout);
-      int borrowReturn(QString proofFile);
-      QStringList report(QString param=REPORT_PARAM_PACKAGE   ,QString param1="" );
-      void shutDown();
-      //bool  setCheckUUID(bool b);
-
       void startHB(QString vender,QString pack,QString version);
       void stopHB(QString vender,QString pack,QString version);
       QString encodeHB(QString vender,QString pack,QString version);
       QStringList  decodeHB(QString en);
+// borrow:
+      int borrow(QString filein,QString fileout);
+      int borrowReturn(QString proofFile);
+
+      QStringList report(QString param=REPORT_PARAM_PACKAGE   ,QString param1="" );
+      QStringList viewConfig(QString pack="");
+      QStringList viewAgent(QString pack="");
+// shutdown:
+      void shutDown(); // shutdown interface
+      //bool  setCheckUUID(bool b);
+
+
       void setDev(QString dev);
       tetris::device::id  & getDev(){return *_devServer;};
       void setPortal(int i=0,QString ip="",QString port="");
+
       bool isPortal();// yes connect portal
+      bool isAgent();
     
 
 private:
 	bool startup (helpers* hp);
-	void shutdown (void);
+	void shutdown (void);// for device down
         HbThread *hbTH;
         QString _ip ,_user,_hostname,_pid,_licproject;
         QString _portalIp,_portalPort;
+        QString _licAgent;
         int _portal;
   
 private:
 	void caller (void);
-        void hber (void);
+        //void hber (void);
 	DECLARE_DEVICE_ASYNC_CALLBACK (async_callback);	
 private:
 	bool debug_mode;

@@ -38,17 +38,30 @@ bool generate_credential_data(string cn, X509 **pcert, EVP_PKEY **ppkey)
 StartClient::StartClient()
 {
     setPortal(0);
+    QString agent ;
      bool debug_mode = false;
      getPortal();
+     client = NULL;
+     qDebug() << "portal ,agent = " << isPortal() << getenv(ENV_LIC_AGENT);
 
      if (!isPortal())  
      {
-         initDev();
+         agent = getenv(ENV_LIC_AGENT);
+         if (!agent .isEmpty()) 
+         {
+             cout << "Error !! We can only connect licAgent from protal\n";
+             //return;
+             exit(1);
+         }
+         initDev(); 
      }
       else
       {
+          qDebug() << "start new Noserver";
           client  = new NoServer(debug_mode);  
+           qDebug() << "after new Noserver";
           client->setPortal(_portal,_portalIp,_portalPort);
+           qDebug() << "after set portal";
       }
 }
 
@@ -85,63 +98,7 @@ int StartClient::closeDev()
 
 }
 
-int StartClient::initDev1()
-{
-
-    bool debug_mode = true;
-     
-     X509* ca_cert;
-     Json::Value bus_options;
  
-     OpenSSL_add_all_algorithms ();
-     ERR_load_crypto_strings ();
-     init_ssl_locks ();
-     string a1 = CA_CERT;
-     /* load the root certificate/private key */
-     if (!(ca_cert = tetris::pki::load_cert (CA_CERT))) {
-             TETRIS_ERROR("ERROR: Cannot load the root cert.");
-             return -1;
-     }
-     //    cout << "port= " << portalPort;
-
-   //  portalPort=18080;
-     int busport = 12345;
-
-    bus_options["unicast_port"] = (unsigned int)busport;
-
-     /*step1:init bus*/
-     /* create a new bus and initialize it */
-     tetris::bus* bus = tetris::new_bus ("distributed");
-     if (bus == NULL){
-             TETRIS_ERROR("ERROR: Cannot create the bus.");
-             return -1;
-     }
-     if (!bus->init (ca_cert, bus_options, NULL)) {
-             TETRIS_ERROR("ERROR: Cannot init the bus.");
-             return -1;
-     }
-     /* start up the bus*/
-
-     if (!bus->startup ()) {
-             TETRIS_ERROR("ERROR: Cannot start the bus.");
-             return -1;
-     }
-     /* start up the gateway*/
-        client  = new NoServer(debug_mode);
-//tetris_service_gateway   gw(portalPort);
-tetris::bus::cd_login cd1 = {"whatever", "anything"};
-//bus->attach_device(&gw,cd1);
-    bus->attach_device(client,cd1);
-
-  sleep(10);
-
- //    TETRIS_ERROR("portal stop.");
-/* this will detach/shutdown all devices automatically */
-   //  tetris::delete_bus (bus);
-   //  return 0;
-
-}
-
 int StartClient::initDev()
 {
 
