@@ -88,11 +88,17 @@ int startServer (int argc, char* argv [])
 		TETRIS_ERROR("Error: Cannot parse options.");
 		return -1;
 	}
+	string cakey_file;
+
 	cacert_file = tetris_root+CACERT_FILE;
+        cakey_file = tetris_root+CA_PRIVATE_KEY_FILE;
+
 	device_conf_file = tetris_root+DEVICE_CONF_FILE;
-	user_conf_file = tetris_root+USER_CONF_FILE;
+	
 	device_cert_file = tetris_root+DEVICE_CERT_FILE;
 	device_key_file = tetris_root+DEVICE_KEY_FILE;
+
+        user_conf_file = tetris_root+USER_CONF_FILE;
 
 	/* init the openssl library */
 	OpenSSL_add_all_algorithms ();
@@ -104,7 +110,10 @@ int startServer (int argc, char* argv [])
 	/* load the root certificate/private key */
 	//string a1="/home/geoeast/lg/NGC/chen/tetris/src/third/ca/cacert.pem";
        // string a1="/home/cjh/tetris/tetris/src/third/ca/cacert.pem";
+
         cacert_file = CA_CERT;
+        cakey_file = CA_KEY;
+
 	if (!(ca_cert = tetris::pki::load_cert (cacert_file))) {
 		printf ("failed to load the root cert\n");
 		exit (-1);
@@ -112,7 +121,7 @@ int startServer (int argc, char* argv [])
  
 
 	//if (!(ca_private_key = tetris::pki::load_private_key ("/home/geoeast/lg/NGC/chen/tetris/src/third/ca/cakey.pem"))) {
-        if (!(ca_private_key = tetris::pki::load_private_key (CA_KEY))) {
+        if (!(ca_private_key = tetris::pki::load_private_key (cakey_file))) {
 		printf ("failed to load the root key\n");
 		exit (-1);
 	}
@@ -125,7 +134,7 @@ int startServer (int argc, char* argv [])
         string serverid;
         serverid = LIC_AGENT_ID;
 
-        cout<<"serverid =   " << serverid <<"up=" << un_useP<< endl;
+        cout<<"serverid =   " << serverid <<"un_useP" << un_useP<< endl;
         cout<<"c_id_str =   " << c_id_str<< endl;
         if (!c_id_str.empty())  serverid = c_id_str;
         cout<<"serverid =   " << serverid << endl;

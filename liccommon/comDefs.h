@@ -41,6 +41,7 @@
 #define CMD_LOADCONFIG "loadConfig"
 #define CMD_VIEWCONFIG "viewConfig"
 #define CMD_CLEARCONFIG "clearConfig"
+//#define CMD_GETDEV "getDev"
 
 #define CMD_VIEWAGENT "viewAgent"
 
@@ -54,6 +55,7 @@
 
 #define LIC_SERVER_ID  "5:0:0:0"
 #define LIC_AGENT_ID  "5:0:1:0"
+#define LIC_UM_ID  "1:0:0:0"
 
 //load lic:
 #define CMD_PARAM "cmd_param" 

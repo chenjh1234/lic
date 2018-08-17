@@ -485,7 +485,7 @@ void SAgent::setIP(QString ip)
 {
    _IP = ip;
 }
-QString SAgent::IP()
+QString SAgent::getIP()
 {
    return _IP;
 }

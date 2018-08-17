@@ -33,7 +33,7 @@ using namespace std;
 #define TEST_LIC_BORROW_IN "./test/test_borrowIn.lic";
 #define TEST_LIC_BORROW_OUT   "./test/test_borrowOut.lic";
 #define TEST_LIC_BORROW_PROOF    "./test/test_borrowOut.lic_proof";
-//#include "testCrypt.cpp"
+#include "testCrypt.cpp"
 void testCrypt();
 
 
@@ -1614,6 +1614,7 @@ M_START
      U_TEST(dataClear)
      U_TEST(loadDBPack)
      U_TEST(packDB2DB)// clear packdb2db loadDB
+     testCrypt();
 
 // end of test save load DB---------------
 #endif

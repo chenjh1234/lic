@@ -110,6 +110,10 @@ qmake
 echo viewagent
 cd ../viewagent
 qmake
+echo getdev
+cd ../getdev
+qmake
+
 #--------// end of util
 echo ======= apps-test =======
 echo apps

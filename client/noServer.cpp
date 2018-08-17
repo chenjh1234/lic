@@ -812,6 +812,19 @@ QStringList NoServer::report(QString param, QString param1)
    if (str.length() > 0)  slist = str.split("\n");
    return slist;
 }
+QString NoServer::getDev(QString devid)
+{
+   string id;
+   QString ret;
+
+   Json::Value params, result;
+   id = devid.Q2CH;
+   hp->get_devices(id,result);
+// result:
+   ret = result.toStyledString().c_str();;
+   //cout <<result.toStyledString().c_str();
+   return ret;
+}
 #if 0
 bool NoServer::setCheckUUID(bool b)
 {

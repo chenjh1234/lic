@@ -62,7 +62,7 @@ public:
     QMap<QString,SAppMng *> packMng;
 
      void setIP(QString ip);
-     QString IP();
+     QString getIP();
      void setPort(int p);
      int port();
     

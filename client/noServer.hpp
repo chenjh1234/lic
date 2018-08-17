@@ -86,7 +86,8 @@ public:
 // shutdown:
       void shutDown(); // shutdown interface
       //bool  setCheckUUID(bool b);
-
+// dev:
+      QString getDev(QString id);
 
       void setDev(QString dev);
       tetris::device::id  & getDev(){return *_devServer;};

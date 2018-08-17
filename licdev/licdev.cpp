@@ -20,13 +20,14 @@ int main (int argc, char *argv[])
 {
    // cout << "hello world" << endl;
     QString user;
-        
+  #if 0
     user = getenv("USER");
     if (user != ADMIN_USER) 
     {
         cout << "Error we have to shutdown Lic server as admin user : " << ADMIN_USER << endl;
         exit(1);
     }
+    #endif
     startServer(argc, argv); 
     return(0);
 }

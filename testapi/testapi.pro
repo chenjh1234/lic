@@ -10,7 +10,7 @@ INCLUDEPATH +=$${INCLUDE_SERVER}
  
 LIBS += \
 	-L $${LIC_ROOT_PATH}/lib\
-	-llicbase  -llicconfig   -llicserver#  /lib64/libdl.so.2  
+	-llicbase  -llicconfig   -llicserver -lcrypto#  /lib64/libdl.so.2  
 HEADERS +=  
  
 SOURCES +=  \

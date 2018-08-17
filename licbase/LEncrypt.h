@@ -11,7 +11,9 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <time.h>
 
+#include <ifaddrs.h>
 
 #include <string>
 #include <fstream>
@@ -27,6 +29,7 @@
 #include <openssl/x509v3.h>  
 #include <openssl/err.h>  
 #include <iostream>
+#include <vector>
 
 using namespace std;
    
@@ -151,10 +154,14 @@ public:
     int decryptPkey(int mode ,RSA *key, char *inBuf,int inlen,char *outBuf);
 /// getMac()
     string getMac();
+    string getMac1();//old test
     string getIP();
     string getHostname();
     string getUser();
     string getPID();
+    vector<string>  getNetCards();
+    string getNetCard();
+
 
 //a keys:
 

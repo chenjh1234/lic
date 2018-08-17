@@ -548,7 +548,22 @@ U_START(encodePass)
     GT(ret.length(),0);
     EQ(ret,inp);
 U_END
+U_START(mac)
+    LEncrypt cr; 
+    LLicEncrypt lcr;
+    string s;
+    s = cr.getMac();
+    PR("mac = " + s);
+    s = cr.getIP();
+    PR("IP = " + s);
 
+    s = lcr.getMidMark().Q2CH;
+    PR("midMark= " + s);
+    s = lcr.getMid().Q2CH;
+    PR("mid= " + s);
+
+    
+U_END
 #ifndef TEST_UNIT
 M_START
 #else
@@ -570,6 +585,7 @@ void testCrypt()
    U_TEST(encrypt)
    U_TEST(cmd)
    U_TEST(encodePass)
+   U_TEST(mac)
    
 #endif 
 //U_TEST(sign)

@@ -1698,7 +1698,7 @@ string  LEncrypt::getIP()
     string str;
     //if(gethostname(host_name,sizeof(host_name))==SOCKET_ERROR)  
     gethostname(host_name,sizeof(host_name)); 
-    printf("host name:%s\n",host_name);  
+    //printf("host name:%s\n",host_name);  
     struct hostent *host = gethostbyname(host_name);  
     if(host==0)  return str;
     strcpy(ip,inet_ntoa(*(in_addr*)*host->h_addr_list));  
@@ -1733,7 +1733,60 @@ string  LEncrypt::getUser()
     return str;  
 }  
 
-string  LEncrypt::getMac()
+vector<string>  LEncrypt::getNetCards()
+{
+    vector<string> names;
+    string name;
+    struct ifaddrs *ifc, *ifc1;
+    char ip[64] = {};
+    char nm[64] = {};
+
+    int i;
+    i = 0;
+ 
+    if(0 != getifaddrs(&ifc)) return names;
+    ifc1 = ifc;
+ 
+    //printf("iface\tIP address\tNetmask\n");
+
+    for(; NULL != ifc; ifc = (*ifc).ifa_next){
+ 
+        if ( (ifc->ifa_flags & IFF_LOOPBACK) )  continue; //printf ("loopback ");
+        if (! (ifc->ifa_flags & IFF_RUNNING) )  continue;//printf ("running  ");
+        if ( !(ifc->ifa_flags & IFF_UP) ) continue;// printf ("up   ");
+        if (! (ifc->ifa_flags & IFF_MULTICAST) )  continue;//printf ("IFF_MULTICAST   ");
+        if (!(ifc->ifa_addr->sa_family == AF_INET)) continue ;//printf ("AF_INET   ");
+        //name;
+        name = (*ifc).ifa_name;
+        //ip
+        if(NULL != (*ifc).ifa_addr) 
+        {
+            inet_ntop(AF_INET, &(((struct sockaddr_in*)((*ifc).ifa_addr))->sin_addr), ip, 64);
+        }
+        //mask:
+        if(NULL != (*ifc).ifa_netmask)
+        {
+            inet_ntop(AF_INET, &(((struct sockaddr_in*)((*ifc).ifa_netmask))->sin_addr), nm, 64);
+        }
+        names.push_back(name);
+        i++;      
+    }
+ 
+    //freeifaddrs(ifc);
+    freeifaddrs(ifc1);
+    return names;
+}
+string LEncrypt::getNetCard()
+{
+    string card;
+    card="";
+    vector<string> cards;
+    cards = getNetCards();
+    if (cards.size()>0)  card = cards[0];
+    return card;
+}
+ 
+string  LEncrypt::getMac1()
 {
     std::string  mac_address;
     mac_address.clear();
@@ -1772,5 +1825,48 @@ string  LEncrypt::getMac()
 
     return mac_address;
 }
+string  LEncrypt::getMac()
+{
+    std::string  mac_address;
+    mac_address.clear();
+
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0)
+    {
+        return(false);
+    }
+    string th;
+    th = "eth0";
+    th = getNetCard();
+
+    struct ifreq ifr = { 0 };
+    strncpy(ifr.ifr_name, th.c_str(), sizeof(ifr.ifr_name) - 1);
+    bool ret = (ioctl(sock, SIOCGIFHWADDR, &ifr) >= 0);
+#if 0
+    if (!ret )
+    {    strncpy(ifr.ifr_name, "eth1", sizeof(ifr.ifr_name) - 1); 
+          ret = (ioctl(sock, SIOCGIFHWADDR, &ifr) >= 0);
+    }
+
+#endif
+    close(sock);
+
+    const char hex[] = 
+    {
+        '0', '1', '2', '3', '4', '5', '6', '7', 
+        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' 
+    };
+    char mac[16] = { 0 };
+    for (int index = 0; index < 6; ++index)
+    {
+         size_t value = ifr.ifr_hwaddr.sa_data[index] & 0xFF;
+         mac[2 * index + 0] = hex[value / 16];
+         mac[2 * index + 1] = hex[value % 16];
+    }
+    std::string(mac).swap(mac_address);
+
+    return mac_address;
+}
+
 
  
