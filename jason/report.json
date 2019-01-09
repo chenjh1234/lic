@@ -1,0 +1,10 @@
+{
+		"method": "call",
+		"params":{
+			"url":"report",
+			"url_params":{
+				"report_param":"ALL",
+				 "report_param_single":null
+			}
+		}
+}
