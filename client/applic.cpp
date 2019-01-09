@@ -8,34 +8,47 @@
 StartClient *SC =NULL;
 #define START_CLIENT if(SC == NULL) SC = new StartClient();
 /**
+ *@brief 请求注册软件许可资源 
  * login to lic servers
  * 
  * @author cjh (10/24/2017)
  * 
- * @param vender  vendername
- * @param pack  package name
- * @param version version of the package
- * @param number  number of license applied
- * @param appname applicationname 
- * @param sign output the vender sign,caller allocate space 300
+ * @param vender  开发商名名称 
+ * vendername
+ * @param pack  软件包名称 
+ * package name
+ * @param version 软件包版本号 
+ * version of the package
+ * @param number  请求的许可数量 
+ * number of license applied
+ * @param appname 应用程序名称 
+ * applicationname 
+ * @param sign 
+ *             返回：开发商签名信息（需要300个字节空间）息
+ *             output the vender sign,caller allocate space 300
  *             bytes
- * @param sid  output the server mid,caller allocate space 40
- *             bytes
+ * @param sid 返回：服务器ID（需要40个字节空间） 
+ *               output the server mid,caller allocate space 40
+ *               bytes
+
  * 
- * @return int <0 error,>=0 OK;
+ * @return 返回：int <0 error,>=0 OK;
  */
-int loginlic(const char *vender,const char* pack,const char *version,int number,char* appname,char *sign,char *sid)
+int login_lic(char *vender,char* pack,char *version,int &number,char* appname,char *sign,char *sid)
 {
     QStringList slist;
-    QString v,p,ver,n,app,sg,sd;
+    QString v,p,ver,app,sg,sd;
+    int i;
+    int n; 
     v = vender;
     p = pack;
     ver = version;
     app =appname;
+    n = number;
 
-    START_CLIENT;
-    
-    slist = SC->client->loginApp(v, p, ver, number, app); 
+        START_CLIENT;
+
+    slist = SC->client->loginApp(v, p, ver, n, app); 
     if (slist.size() <2) return -1;
     memcpy(sign,slist[0].Q2CH,slist[0].length());
     sign[slist[0].length()] =0;
@@ -44,15 +57,19 @@ int loginlic(const char *vender,const char* pack,const char *version,int number,
     return 1;  
 }
 /**
+ *@brief 注销登记的软件许可资源  
  * logout from lic server
  *  
- * @param vender vender name
- * @param pack  package name
- * @param version  version of the package
+ * @param vender 开发商名名称 
+ * vender name
+ * @param pack  软件包名称 
+ * package name
+ * @param version  软件包版本号 
+ * version of the package
  * 
- * @return int ok: >=0,Err <0;
+ * @return  返回：int ok: >=0,Err <0;
  */
-int logoutlic(const char *vender,const char* pack,const char *version)
+int logout_lic(char *vender,char* pack,char *version)
 {
     int i;
     QString v,p,ver;
@@ -65,61 +82,90 @@ int logoutlic(const char *vender,const char* pack,const char *version)
 
 }
 /**
+ * @brief 
+ *        无从参数注销登记的软件许可资源，（参数来源于最近一次login_lic的参数）
+ *  
+ *
  * 
- * logout from licserver,
- * 
- * @return ok: >=0,Err <0;
+ * @return  返回：int ok: >=0,Err <0;
  */
-int logoutlic() 
+int logout_licf() 
 {
     if (SC == NULL) return -1;
     return SC->client->logoutApp();
 }
 /**
+ * @brief 
+ * 检查login_lic返回的开发商签名信息，服务器ID是否合法。
  * check if login return(sign,serverid) is valid; 
  *  
- * @param sign  login returnd
- * @param sid   login returnd 
- * @param pub   public key of the vender
- * @param seed  seed string of the vender
+ * @param sign  开发商签名信息 
+ *  login returnd
+ * @param sid   服务器ID 
+ *  login returnd 
+ * @param pub   开发商的公钥串 
+ *  public key of the vender
+ * @param seed 开发商的私密串  
+ *   seed string of the vender
  * 
- * @return bool true: if valid ,false: if incalid;
+ * @return 返回：真：成功，假：失败。 
+ * ： bool true: if valid ,false: if incalid;
  */
-bool checklic(char * sign,char *sid, char *pub,char *seed)
+bool check_lic(char * sign,char *sid, char *pub,char *seed)
 {
     LLicEncrypt lic;
     QString sn,ssid,p,sd;
+    bool b;
     p = pub;
     sn = sign;
     sd = seed;
     ssid = sid;
+    cout <<" size of pub = " << p.length() <<endl;
+    cout <<" size of sed = " << sd.length() <<endl;
+    cout <<" size of sn = " << sn.length() <<endl;
+    cout <<" size of ssid = " << ssid.length() <<endl;
 
-    return lic.verifyVenderSeed(p,sn,sd,ssid);//pub,sign,seed,sid
+
+    b = lic.verifyVenderSeed(p,sn,sd,ssid);//pub,sign,seed,sid
+    cout << "check_lic= " << b <<endl;
+    return b;
 }
 /**
- * login to license  server and check if the return is valid;
- * 
- * @param vender vender name
- * @param pack package name
- * @param version version of the package
- * @param number number of license appied
- * @param appname application name
- * @param pub public key of the vender
- * @param seed seed string of the vender
- * 
- * @return int 
+ * @brief 
+ * 请求注册软件许可资源,并检查返回的开发商签名信息，服务器ID是否合法。
+ *   login to license  server and check if the return is valid;
+ * @param vender  开发商名名称 
+ * vendername
+ * @param pack  软件包名称  
+ * package name
+ * @param version 软件包版本号  
+ * version of the package
+ * @param number  请求的许可数量  
+ * number of license applied
+ * @param appname 应用程序名称   
+ * application name 
+ * @param pub   开发商的公钥串 
+ * public key of the vender
+ * @param seed 开发商的私密串  
+ *  seed string of the vender
+
+ * @return 返回：真：成功，假：失败。
+ * ： bool true: if valid ,false: if incalid; 
  */
-bool logincheck(const char *vender,const char * pack,const char *version,int number,char* appname,char *pub,char *seed)
+bool login_check(char *vender,char * pack,char *version,int &number,char* appname,char *pub,char *seed)
 {
     QStringList slist;
-    QString v,p,ver,n,app,pb,sd;
+    QString v,p,ver,app,pb,sd;
+    int n;
     v = vender;
     p = pack;
     ver = version;
     app =appname;
+    n = number;
+
     START_CLIENT;
 
-    slist = SC->client->loginApp(v,p,ver,number,app);
+    slist = SC->client->loginApp(v,p,ver,n,app);
     if (slist.size() <2) return false;
 
     LLicEncrypt lic;

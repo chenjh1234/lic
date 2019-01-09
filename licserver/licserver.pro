@@ -42,7 +42,7 @@ LIBS += \
 # below is for install:  / is important we must install from /
 APPLIC.path +=/$${LIC_ROOT_PATH}/file
 APPLIC.files = ../apps/apps.cpp ../apps/apps.pro ../licwork/licfile.sample ../apps/licdev.pdf ../apps/licgen.pdf ../apps/stjob.pdf \
-	../licwork/* ../testconfig/lic.conf  
+	../licwork/* ../testconfig/*.conf  ../client/applic.h
 INSTALLS +=APPLIC
 
 SH.path +=/$${LIC_ROOT_PATH}/bin

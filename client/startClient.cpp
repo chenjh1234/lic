@@ -101,15 +101,44 @@ int StartClient::closeDev()
  
 int StartClient::initDev()
 {
-
-   /* parse the options */
+       /* parse the options */
    int o;
-   //int attach_um = 0;
-   //int attach_server = 0;
-   int attach_client = 0;
    unsigned short unicast_port = 0;
    bool enhanced_security = false;
    bool debug_mode = false;
+
+   string tetris_root;
+   string c_id_str;
+   int un_useP;
+   //X509* ca_cert;
+   tetris::device *device_ptr;
+   string cacert_file, device_conf_file, user_conf_file, device_cert_file, device_key_file;
+   Json::Value bus_options;
+   un_useP = 0;
+   c_id_str = "";
+   int _argc = 1;
+   char * _argv[1];
+
+// parse options:
+   /* process the command line options ,and store in bus_options,c_id_str is set by --device*/
+   if (global::parseOptions(_argc, _argv, bus_options, tetris_root, c_id_str, un_useP) != 0)
+   {
+      TETRIS_ERROR("Error: Cannot parse options.");
+      return -1;
+   }
+   string cakey_file;
+
+   cacert_file = tetris_root + CACERT_FILE;
+   cakey_file = tetris_root + CA_PRIVATE_KEY_FILE;
+
+   device_conf_file = tetris_root + DEVICE_CONF_FILE;
+
+   device_cert_file = tetris_root + DEVICE_CERT_FILE;
+   device_key_file = tetris_root + DEVICE_KEY_FILE;
+
+   user_conf_file = tetris_root + USER_CONF_FILE;
+
+ 
 
    /* init the openssl library */
    OpenSSL_add_all_algorithms();
@@ -121,7 +150,7 @@ int StartClient::initDev()
    /* load the root certificate/private key */
    //string a1="/home/geoeast/lg/NGC/chen/tetris/src/third/ca/cacert.pem";
    //string a1 = "/home/cjh/tetris/tetris/src/third/ca/cacert.pem";
-   string a1 = CA_CERT;
+   string a1 = cacert_file;
    if (!(ca_cert = tetris::pki::load_cert(a1)))
    {
       printf("failed to load the root cert\n");
@@ -140,7 +169,6 @@ int StartClient::initDev()
 
    if (bus == NULL) exit(-1);
 
-   Json::Value bus_options;
    if (unicast_port != 0) bus_options["unicast_port"] = (unsigned int)unicast_port;
    bus_options["enhanced_security"] = enhanced_security;
    bus_options["debug_level"] = debug_mode ? "debug" : "critical";

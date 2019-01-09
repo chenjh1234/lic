@@ -410,6 +410,8 @@ bool LLicEncrypt::verifyVenderSeed(QString venderPubChar, QString venderSign, QS
    qDebug() << " pubchar =" << venderPubChar;
 
    b = en.verifyHexPubChar(venderPubChar.Q2CH, venderSign.Q2CH, str.Q2CH) ;
+
+   qDebug() << "verifyVenderSeed =" << b;
     
    return b;
 }

@@ -174,6 +174,7 @@ void tetris_service_gateway::processRestfulCall(void) {
        	string body_string=x_os.str();
        	string method;
         string agent;
+        cout << "param = " << body_string<<endl;
         
 
        	Json::Reader reader;
@@ -369,7 +370,7 @@ int main (int argc, char *argv []){
 	init_ssl_locks ();
 string a1 = CA_CERT;
 	/* load the root certificate/private key */
-	if (!(ca_cert = tetris::pki::load_cert (CA_CERT))) {
+	if (!(ca_cert = tetris::pki::load_cert (cacert_file))) {
 		TETRIS_ERROR("ERROR: Cannot load the root cert.");
 		return -1;
 	}
@@ -413,4 +414,4 @@ string a1 = CA_CERT;
    
 }
 
-#endif /* TETRIS_PORTAL_HPP_ */
+#endif /* TETRIS_PORTAL_HPP_ */{"url_param":{"method":"call","params":{"url":"report","url_params":{"report_param":"ALL"}}}}

@@ -1444,6 +1444,7 @@ bool  LEncrypt::verifySignPubChar(char *pubChar, char *cipherText,  int cipherTe
    if (pkey == NULL)
    {
       ERR_print_errors_fp(stderr);
+      printf("open_public_key assign failed\n");
       return false;
    }
 
@@ -1457,8 +1458,10 @@ bool  LEncrypt::verifySignPubChar(char *pubChar, char *cipherText,  int cipherTe
    if (err != 1)
    {
       ERR_print_errors_fp(stderr);
+      printf("Verify err !=1  failed\n");
       return false;
    }
+   printf("verifySignPubChar  OK  \n");
    return true;
 }
 /**

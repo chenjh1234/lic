@@ -309,7 +309,7 @@ int startServer(int argc, char *argv[])
    attach_um = 0;
    if (c_id_str.empty())
    {
-      attach_um = 0;
+      attach_um = 1;
    }
    else if (c_id_str == serverid)
    {
@@ -319,6 +319,7 @@ int startServer(int argc, char *argv[])
    {
       serverid = c_id_str;
       attach_server = 0;
+      attach_um = 0;
    }
     //attach_um = 1;
     //attach_server = 0;
@@ -381,6 +382,8 @@ int startServer(int argc, char *argv[])
    if (unicast_port != 0) bus_options["unicast_port"] = (unsigned int)unicast_port;
    bus_options["enhanced_security"] = enhanced_security;
    bus_options["debug_level"] = debug_mode ? "debug" : "critical";
+
+   cout << "bus_optinon = " << bus_options.toStyledString().c_str() <<endl;
    if (!bus->init(ca_cert, bus_options, NULL))
    {
       printf("cannot init the bus\n");
