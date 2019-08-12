@@ -1983,8 +1983,7 @@ int SLicData::showDBPack(QDataStream& ds)
    QString fileDB;
    QStringList slist;
 // pack:
-   SPackMng *pmng;
-
+   //SPackMng *pmng;
    ds >> slist;
    sz = slist.size();
    //qDebug() << "slist in load = " << slist;
@@ -2001,10 +2000,9 @@ int SLicData::showDBApp(QDataStream& ds)
    QStringList slist;
    if (ds.atEnd()) return 1;
 // app:
-   SAppMng *amng;
+   //SAppMng *amng;
    ds >> slist;
    
-
    sz = slist.size();
    qDebug() << "sz = "<< sz;
    for (i = 0; i < sz; i++)
@@ -2139,7 +2137,7 @@ bool SLicData::isDBRegisted()
 //=======================heartBeat:
 int SLicData::appHB(SAppInfo& app)
 {
-   int  number;
+   //int  number;
    LFileDate fd;
    QString str;
    QString vender, package, version, packid, pid, ip, user;
@@ -2153,7 +2151,7 @@ int SLicData::appHB(SAppInfo& app)
    vender = info->get(APP_VENDER).toString();
    package = info->get(APP_PACKAGE).toString();
    version = info->get(APP_VERSION).toString();
-   number = info->get(APP_NUMBER).toInt();
+   //number = info->get(APP_NUMBER).toInt();
    ip = info->get(APP_IP).toString();
    pid = info->get(APP_PID).toString();
    user = info->get(APP_USER).toString();

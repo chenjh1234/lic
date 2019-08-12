@@ -4,11 +4,15 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <tetris/device.hpp>
-#include "distributed_bus.hpp"
-#include "util.hpp"
+
+#include <set>
+#include <boost/thread/thread.hpp>
+#include <boost/asio.hpp>
+#include <boost/shared_ptr.hpp>
+#include <uuid/uuid.h>
+#include <tetris/bus.hpp>
+ 
 #include <dirent.h>
-///#include <tetris/init_ssl.hpp>
-//debug setting
 
 /* lxd  */
 /* the simulated user manager device */

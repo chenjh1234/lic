@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <tetris/device.hpp>
-#include "distributed_bus.hpp"
-#include "util.hpp"
+#include <boost/thread/thread.hpp>
+
 #include <dirent.h>
 #include <QString>
+#include <QDebug>
 #include <QStringList>
 #include <QThread>
 #include <http_call.hpp>
@@ -31,6 +32,7 @@
         port = _portalPort.toUShort();\
 	HttpClient hc(ip,port);\
         hc.init();\
+        qDebug() << "In Portl===port " << port;\
         bool b = hc.Call(LIC_URL, x,params,result);\
         hc.stop();\
     }else
@@ -121,6 +123,7 @@ private:
 
 
         QMap<QString,QString> mapHB;
+        QMap<QString,QStringList> mapLogin;// for login register, if the same proess login packid more times return the first;
          
 };
 //=====================================================================

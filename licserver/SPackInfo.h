@@ -52,7 +52,7 @@ public:
 
     QString packid,err;
     int ret;// for 
-    int limit;// limit of the license
+    int limit;// limit of the license=0,is unlimit
     int start;// start number in resource
     int stat;// OFF|OK|EXP|UNLOAD
 

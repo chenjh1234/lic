@@ -50,7 +50,7 @@ U_START(testCreateLic)
    LLicEncrypt lic;
    LLicFile *lfile;
    QString str, fileo;
-   LInfo * infoV,*infoP;
+ //  LInfo * infoV,*infoP;
    LEncrypt en;
 // open file:
    QString sPub, vPri, vSeed, venderKey, pKey;
@@ -71,120 +71,24 @@ U_START(testCreateLic)
    if (i <= 0)
    {
       cout << INPUT_ERR;
-
-      exitM(1);
-   }
-   //lfile = lic.getLicFile();
-
-// venderPri serverPub files:
-
-   infoV = lfile->vender();
-   // serverPub file:
-//   if (infoV->isKey(SERVERPUB))  sPub = infoV->get(SERVERPUB).toString();
-//   else sPub = SERVER_PUB;
-   // venderPri file:
-   if (infoV->isKey(VENDERPRI))  vPri = infoV->get(VENDERPRI).toString();
-   else vPri = VENDER_PRI;
-   // venderSeed:
-   if (infoV->isKey(VENDERSEED))  vSeed = infoV->get(VENDERSEED).toString();
-   else vSeed = VENDER_SEED;
-// is serverPub,venserPri file exist:
-   LFileDate fd;
-  #if 0
-   if (!fd.isFile(sPub))
-   {
-      cout << SERVERPUB_ERR << "file = " << sPub.Q2CH << endl;
-      exitM(1);
-   }
-   #endif
-   if (!fd.isFile(vPri))
-   {
-      cout << VENDERPRI_ERR << "file = " << vPri.Q2CH << endl;
-      exitM(1);
-   }
-// set new uuid:
-   string sstr;
-   sstr = en.uuid();
-   str = sstr.c_str();
-   infoV->set(UUID, str);
-// serverID check:
-   QString sid;
-   sid = infoV->get(SERVERID).toString();
-   if (sid.length() != MID_LEN) 
-   {
-      cout << MID_ERR << "  mid= " << sid.Q2CH << endl;
       exitM(1);
    }
 
-//get venderKey
-   //str = lic.encryptVenderKey(sPub,  vPri, infoV, vSeed);
-   str = lic.encodeVenderKey(vPri, infoV, vSeed);
-   infoV->set(VENDERKEY, str);
-
-   //qDebug() << "venderKey = " << VENDERKEY<<str;
-#if 0
-   LPackageMng pm;
-   pm = lfile->packageMng();
-   qDebug() << "pm = " << pm.size() << pm.get(0)->size();
-   infoP = lfile->package(0);
-   qDebug() << "infoP = " << infoP << infoP->size();
-   //exit(1);
-#endif
-
+   lic.setLicFile(lfile);
+   i = lic.createKey();
 #ifdef TEST_UNIT
-   REM("str = lic.encryptVenderKey( sPub,  vPri, infoV,vSeed);");
-   GT(str.length(), 0);
-#endif
-
-   if (str.length() <= 0)
-   {
-      cout << VENDERKEY_ERR;
-      exitM(1);
-   }
-   venderKey = str;
-// get package keys:
-   int num;
-   num  = lfile->size();
-   //qDebug() << "packages = "<< num;
-
-   for (i = 0; i < num; i++)
-   {
-      infoP = lfile->package(i);
-      str = lic.digestPackageKey(venderKey, infoP);
-      //qDebug() << "pkey1 = " << str.length() << str << PKEY;
-      infoP->set(PKEY, str);
-      str = infoP->get(PTYPE).toString();
-      if (!(str ==PTYPE_TASK || str == PTYPE_USER || str ==PTYPE_NODE)) 
-      {
-          cout << "Package type error: "<< str.Q2CH << endl;
-          exit(1);
-      }
-      //qDebug() << "pkey2 = " << PKEY;
-#ifdef TEST_UNIT
-      //qDebug() << "pkey = " << str;
-      REM("str = lic.digestPackageKey(venderKey,infoP); ")
-      GT(str.length(), 0);
-#endif
-   }
-   QString client, uuid;
-   client = infoV->get(CLIENTNAME).toString();
-   uuid = infoV->get(UUID).toString();
-
-// output files:
-   if (fileo.length() == 0)  fileo = "lic_" + client + "_" + uuid + "_.lic";
-   i = lfile->writeFile((char *)fileo.Q2CH);
-#ifdef TEST_UNIT
-   REM("i = lfile->writeFile(LIC_FILE1); ")
    GT(i, 0);
 #endif
-   if (i <= 0)
+   if(i <0)
    {
-      cout << WRITEFILE_ERR;
-      exitM(1);
+       qDebug() <<  lic._err ;
+       exitM(1);
    }
-   delete lfile;
-   str = "create Lic file OK->" + fileo;
-   cout << str.Q2CH << endl;
+   else
+   {
+       lfile->writeFile( fileo);
+       delete lfile;
+   }
 
 #ifndef TEST_UNIT
 }

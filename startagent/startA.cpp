@@ -111,8 +111,6 @@ int startServer (int argc, char* argv [])
 	//string a1="/home/geoeast/lg/NGC/chen/tetris/src/third/ca/cacert.pem";
        // string a1="/home/cjh/tetris/tetris/src/third/ca/cacert.pem";
 
-        cacert_file = CA_CERT;
-        cakey_file = CA_KEY;
 
 	if (!(ca_cert = tetris::pki::load_cert (cacert_file))) {
 		printf ("failed to load the root cert\n");

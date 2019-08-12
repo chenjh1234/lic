@@ -2,11 +2,11 @@
 #ifndef APP_LIC_H__ 
 #define APP_LIC_H__ 
 
-#define login_lic login_lic__
-#define logout_lic logout_lic__
-#define check_lic check_lic__
-#define login_check login_check__
-#define logout_licf logout_licf__
+//#define login_lic login_lic__
+//#define logout_lic logout_lic__
+//#define check_lic check_lic__
+//#define login_check login_check__
+//#define logout_licf logout_licf__
 
 extern "C"
 {
@@ -15,6 +15,7 @@ extern "C"
     int logout_licf();
     bool check_lic(char * sign,char *sid, char *pub,char *seed);
     bool login_check(char *vender,char* pack,char *version,int &number,char* appname,char *pub,char *seed);
+    int  lic_report(char *ret);
 }
 #endif
 

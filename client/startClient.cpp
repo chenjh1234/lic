@@ -1,6 +1,6 @@
 
 #include "startClient.h"
-
+#include <QDebug>
 #include <tetris/init_ssl.hpp>
 #include <tetris/global_setting.hpp>
 
@@ -42,7 +42,7 @@ StartClient::StartClient()
      bool debug_mode = false;
      getPortal();
      client = NULL;
-     qDebug() << "portal ,agent = " << isPortal() << getenv(ENV_LIC_AGENT);
+     //qDebug() << "portal ,agent = " << isPortal() << getenv(ENV_LIC_AGENT);
 
      if (!isPortal())  
      {
@@ -57,11 +57,11 @@ StartClient::StartClient()
      }
       else
       {
-          qDebug() << "start new Noserver";
+          //qDebug() << "start new Noserver";
           client  = new NoServer(debug_mode);  
-           qDebug() << "after new Noserver";
+           //qDebug() << "after new Noserver";
           client->setPortal(_portal,_portalIp,_portalPort);
-           qDebug() << "after set portal";
+           //qDebug() << "after set portal";
       }
 }
 
@@ -81,15 +81,21 @@ bool StartClient::isPortal()
 }
 void StartClient::getPortal()
 {
+    int idx;
           
          _portalPort= getenv(ENV_PORTAL_PORT);
         if (_portalPort.isEmpty())  _portalPort= PORTAL_PORT;
 
         _portalIp = getenv(ENV_PORTAL_IP);
 
-        if (_portalIp.isEmpty())  setPortal(0);      
-            else 
-                setPortal(1);
+        if (_portalIp.isEmpty())  
+            setPortal(0);      
+        else 
+        {
+            idx = _portalIp.lastIndexOf(":");
+            _portalIp = _portalIp.mid(0,idx);
+            setPortal(1);
+        }
 }
 int StartClient::closeDev()
 {
@@ -179,19 +185,19 @@ int StartClient::initDev()
       if (unicast_port > 0) bus_options["unicast_port"] = (unsigned int)unicast_port;
       else
       {
-          qDebug() << "port error = " << unicast_port;
+          cout << "port error = " << unicast_port <<endl;
           exit(1);
       }
-       qDebug() << "bus init begin ";
+       cout << "bus init begin \n";
       if (!bus->init (ca_cert, bus_options, NULL)) 
       {
                    printf ("cannot init the bus\n");
                    exit (-1);
       }
-        qDebug() << "bus init ok ";
+       cout << "bus init ok \n";
       if (bus->startup())
       {
-          qDebug() << "port used  = " << unicast_port;  
+          //qDebug() << "port used  = " << unicast_port;  
           break;
       }  
    }

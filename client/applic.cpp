@@ -173,3 +173,35 @@ bool login_check(char *vender,char * pack,char *version,int &number,char* appnam
     pb = pub;
     return lic.verifyVenderSeed(pb,slist[0],sd,slist[1]);//pub,sign,seed,sid
 }
+/**
+ * @brief 
+
+ *  report license file loaded
+ *   @param licinfo
+ *     license file status
+ * @return  
+ * ：int  : size of information
+ */
+int  lic_report(char *licinfo)
+{
+    #define MAX_LEN 10000
+    QStringList slist;
+   
+    int i;
+    string  str;
+    START_CLIENT;
+
+    slist = SC->client->report();
+
+    for (i = 0; i <slist.size(); i++) 
+    {
+        str += slist[i].Q2CH;
+        str += "\n";
+    }
+    if (str.length() >= MAX_LEN) 
+    {
+        return 0;
+    }
+    memcpy(licinfo, str.c_str(), str.length()); 
+    return  str.length();
+}

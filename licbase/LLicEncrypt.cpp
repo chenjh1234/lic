@@ -607,7 +607,7 @@ int LLicEncrypt::createKey()
       slist << pname; 
 // check limit:
       plimit =  infoP->get(PLIMIT).toString();
-      if (plimit.toInt() <=0)  _err += "Err: Limit  <= error " + plimit + "\n";
+      if (plimit.toInt() <0)  _err += "Err: Limit  =  " + plimit + " error\n";
 // checkDate:
       start =  infoP->get(PSTARTDATE).toString();
       end = infoP->get(PENDDATE).toString();

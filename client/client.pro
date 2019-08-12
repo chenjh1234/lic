@@ -4,8 +4,8 @@ TEMPLATE = lib
 INCLUDEPATH +=  $${INCLUDE_BUS}
 INCLUDEPATH +=  ./\
 	../licbase ../liccommon ../licserver
-
-INCLUDEPATH += $${HTTP_CALL} 
+INCLUDEPATH += $${INCLUDE_HTTP_CALL} 
+#LIBS +=  $${LIBS_BUS}
 DESTDIR =$${LIC_LIB}
 
 TARGET = licclient

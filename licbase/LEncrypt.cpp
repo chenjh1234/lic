@@ -1444,7 +1444,6 @@ bool  LEncrypt::verifySignPubChar(char *pubChar, char *cipherText,  int cipherTe
    if (pkey == NULL)
    {
       ERR_print_errors_fp(stderr);
-      printf("open_public_key assign failed\n");
       return false;
    }
 
@@ -1458,10 +1457,8 @@ bool  LEncrypt::verifySignPubChar(char *pubChar, char *cipherText,  int cipherTe
    if (err != 1)
    {
       ERR_print_errors_fp(stderr);
-      printf("Verify err !=1  failed\n");
       return false;
    }
-   printf("verifySignPubChar  OK  \n");
    return true;
 }
 /**
@@ -1797,7 +1794,7 @@ string  LEncrypt::getMac1()
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
     {
-        return(false);
+        return mac_address;
     }
 
     struct ifreq ifr = { 0 };
@@ -1836,7 +1833,7 @@ string  LEncrypt::getMac()
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
     {
-        return(false);
+        return mac_address;
     }
     string th;
     th = "eth0";

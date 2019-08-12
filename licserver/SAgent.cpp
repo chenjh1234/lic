@@ -320,14 +320,24 @@ int  SAgent::loadDB()
 
    fileDB = dbFile();
    QFile file(fileDB);
-   if (!file.open(QIODevice::ReadOnly)) return -1;
-   QDataStream ds(&file);
-   iret = loadDBApp(ds);
+   if (!file.open(QIODevice::ReadOnly)) 
+   {
+       iret=0;// file.open(QIODevice::ReadWrite);
+   }
+   else
+   {   
+        QDataStream ds(&file);
+        iret = loadDBApp(ds);
+         file.close();
+   }
+
 // close
-   file.close();
+  
  
-  if(iret >=0 ) str = "loadDB OK ";
-  else str = "loadDB Err ";
+  if(iret >0 ) str = "loadDB OK ";
+  else if (iret==0) str = "no DB loaded ";
+   else str = "loadDB Err "; 
+  qDebug() << str;
   //str +=  packid + " " + appid;
    log(str);
    return iret;

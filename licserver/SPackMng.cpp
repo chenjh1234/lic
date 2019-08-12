@@ -119,6 +119,43 @@ SPackInfo* PResource::find(SPackInfo *inf)
    return NULL;
 }
 /// @return i>=0 OK <0 error
+int  PResource::findNodeMax(SAppMng *mng,QString ip)
+{
+    int i,sz,number;
+    QList<int> listApp;
+    SAppInfo *info;
+    listApp =  mng->findAll(PTYPE, PTYPE_NODE, APP_IP, ip); //node
+    sz= listApp.size();
+    if (sz== 0)  return 0;
+
+    int max = 0;
+    for (i= 0 ;  i< sz; i++ ) 
+    {
+        info = (SAppInfo * )mng->get(listApp[i]);
+        number = info->get(APP_NUMBER).toInt();
+        if (number >max )   max = number ;
+    }
+    return max;
+}
+int  PResource::findUserMax(SAppMng *mng,QString ip,QString user)
+{
+    int i,sz,number;
+    QList<int> listApp;
+    SAppInfo *info;
+    listApp =  mng->findAll(PTYPE, PTYPE_USER, APP_IP, ip, APP_USER, user); //user
+    sz= listApp.size() ;
+    if (sz== 0)  return 0;
+
+    int max = 0;
+    for (i= 0 ;  i< sz; i++ ) 
+    {
+        info = (SAppInfo *) mng->get(listApp[i]);
+        number = info->get(APP_NUMBER).toInt();
+        if (number >max )  max = number  ;
+    }
+    return max;
+}
+/// @return i>=0 OK <0 error
 int  PResource::appRequest(SAppInfo& info, SAppMng *mng)
 {
    if (size() <= 0)  return -1;
@@ -155,16 +192,19 @@ int  PResource::appRequest(SAppInfo& info, SAppMng *mng)
    qDebug() <<  "appRequest ty = " << ty;
    // qDebug() <<  "pinfo== " << pinfo->getText();
    i = number;
+   int Userd;
+   Used =used;
+
    if (mng == NULL)
    {
-      used = used + number;
+      Used = Used + number;
    }
    else
    {
       // task:
       if (ty == PTYPE_TASK)
       {
-         used = used + number;
+         Used = Used + number;
       }
       //node:
       else if (ty == PTYPE_NODE)
@@ -172,31 +212,47 @@ int  PResource::appRequest(SAppInfo& info, SAppMng *mng)
 //qDebug() <<  "pinfo== " ;
          ip = info.get(APP_IP).toString();
          //qDebug() << "Preaource :node mng.find=" << i << PTYPE_NODE << ip;
-         i = mng->find(PTYPE, PTYPE_NODE, APP_IP, ip); // user
+         //i = mng->find(PTYPE, PTYPE_NODE, APP_IP, ip); // user
                                                        //qDebug() << "Preaource :node mng.find=" << i << PTYPE_NODE << ip;
                                                        //qDebug() << mng->size()<< mng->getText();
-         if (i < 0)
+         i = findNodeMax(mng,ip);
+         if (i <= 0)
          {
-            used = used + number;
+            //used = used + number;
+             Used = Used + number;
          }
-         else i = 0;
+         else
+         //else i = 0;
+         {
+             if (number > i  ) 
+                 Used = Used +  number -i;
+         }
          //rnode.remove(info);
-      }
+      }//NODE
       // user +ip
       else if (ty == PTYPE_USER)
       {
          ip = info.get(APP_IP).toString();
          user = info.get(APP_USER).toString();
-         i = mng->find(PTYPE, PTYPE_USER, APP_IP, ip, APP_USER, user); // ip + user
-         if (i < 0)
+        // i = mng->find(PTYPE, PTYPE_USER, APP_IP, ip, APP_USER, user); // ip + user
+         i = findUserMax(mng,ip,user);
+         if (i <=  0)
          {
-            used = used + number;
+            Used = Used + number;
+            //used = used + number;
          }
-         else i = 0;
-      }
-   }
+         //else i = 0;
+         else //i >0
+         {
+             if (number > i ) 
+                 Used = Used + number - i;
+         }//find
+      }//USER
+   }//mng
 //qDebug() << "11111";
-   return number;
+   if (Used >limit )  return -1;
+   used =Used;
+   return number; 
 }
 ///  @return i>=0 OK <0 error
 int  PResource::appRelease(SAppInfo& info, SAppMng *mng)
@@ -237,19 +293,25 @@ int  PResource::appRelease(SAppInfo& info, SAppMng *mng)
    {
       used = used - number;
       idd = number;
-   }
+   } 
    //node:
    else if (ty == PTYPE_NODE)
    {
 
       ip = info.get(APP_IP).toString();
-      i = mng->find(PTYPE, PTYPE_NODE, APP_IP, ip); // user
-      if (i < 0) // no package runing in that node;
+      //i = mng->find(PTYPE, PTYPE_NODE, APP_IP, ip); // user
+       i = findNodeMax(mng,ip);// no the current info included
+      if (i <= 0) // no package runing in that node;
       {
          used = used - number;
          idd = number;
       }
-      else i = 0;
+      //else i = 0;
+      else
+      {
+          if (number > i )  
+              used = used - number +  i; 
+      }
       //rnode.remove(info);
    }
    // user +ip
@@ -257,13 +319,19 @@ int  PResource::appRelease(SAppInfo& info, SAppMng *mng)
    {
       ip = info.get(APP_IP).toString();
       user = info.get(APP_USER).toString();
-      i = mng->find(PTYPE, PTYPE_USER, APP_IP, ip, APP_USER, user); // ip + user
-      if (i < 0) // for user no package runing in my node;
+     // i = mng->find(PTYPE, PTYPE_USER, APP_IP, ip, APP_USER, user); // ip + user
+      i = findUserMax(mng,ip,user);
+      if (i <= 0) // for user no package runing in my node;
       {
          used = used - number;
          idd = number;
       }
-      else i = 0;
+      //else i = 0;
+      else
+      {
+          if (number > i )  
+              used = used - number +  i; 
+      }
    }
 //   }
    //return idd; // not release mybe rigth

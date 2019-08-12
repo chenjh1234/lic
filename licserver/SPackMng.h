@@ -38,6 +38,9 @@ public:
     int appRelease(SAppInfo &info,SAppMng *mng);
     int encode(QDataStream &ds);
     int decode(QDataStream &ds);
+    int findNodeMax(SAppMng *mng,QString ip);
+    /// find max number of apps in mng; with the same ip ,user
+    int findUserMax(SAppMng *mng,QString ip,QString user);
     void clear();
 
     SPackInfo * getInfo(int used);// which info we register app;

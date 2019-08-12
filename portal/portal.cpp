@@ -6,27 +6,18 @@
  *      detail:port()
  *       		main--> class
  *       		cert file path
- invalid use of ?class std::set<typename function_t::arg<Indices>...>
  */
 
 
 #ifndef TETRIS_TETRIS_PORTAL_HPP_
 #define TETRIS_TETRIS_PORTAL_HPP_
-
-#include "include/crow_all.h"
-
+#include <crow_all.h>
 #include <distributed_bus.hpp>
 #include <tetris/device.hpp>
 #include <signal.h>
 #include <tetris/init_ssl.hpp>
 #include <json/json.h>
-
 #include <tetris/global_setting.hpp>
- 
-#include "comDefs.h"
- 
-
-#define CMD_TIMEOUT boost::posix_time::time_duration (0,0,30)
 int should_exit = 0;
 void sighandler (int /*signum*/)	{ should_exit = 1; }
 
@@ -36,9 +27,11 @@ set<string> JMProvideMethods;
 set<string> SMProvideMethods;
 set<string> RMProvideMethods;
 set<string> UMProvideMethods;
-set<string> LMProvideMethods;
 
-string jm_id,sm_id,rm_id,lm_id;//add
+string jm_id,sm_id,rm_id;
+//add 20180829
+set<string> LMProvideMethods;
+string lm_id;
 
 class tetris_service_gateway : public tetris::device {
 public:
@@ -65,23 +58,24 @@ private:
     	if(configure.isMember("device_id_sm") && configure["device_id_sm"].isString()){
     		sm_id=configure["device_id_sm"].asString();
     	}
+//add 20180829
         if(configure.isMember("device_id_lm") && configure["device_id_lm"].isString()){
     		lm_id=configure["device_id_lm"].asString();
     	}
 
     	if (!tetris::device::startup(hp))
     		return false;
-    	string jm[]={"Get","Delete","Archive","Add","Modify","Trigger","Cancel"};
-    	JMProvideMethods=set<string>(jm,jm+7);
+    	string jm[]={"Get","Delete","Archive","Add","Modify","Trigger","Cancel","Freeze","Melt"};
+    	JMProvideMethods=set<string>(jm,jm+9);
     	string sm[]={"getService","deleteService","deployService","deployTetrisd","remoteCall"};
     	SMProvideMethods=set<string>(sm,sm+4);
     	string rm[]={"call"};
     	RMProvideMethods=set<string>(rm,rm+1);
     	string um[]={"approvalCert"};
     	UMProvideMethods=set<string>(um,um+1);
+//add 20180829
         string lm[]={"call"};
     	LMProvideMethods=set<string>(lm,lm+1);
-
         /*start work threads*/
     	the_caller= new boost::thread (boost::bind (&tetris_service_gateway::processRestfulCall, this));
         /*thread success return 1 */
@@ -120,19 +114,78 @@ void tetris_service_gateway::processRestfulCall(void) {
  * 		"params":{"type":x}
  * }
  * */
-#if 0
-      CROW_ROUTE(app, "/job/call")
-     ([]() {
-          cout << "this is job call\n";
+// add 20180829:
+        CROW_ROUTE(app, "/lm/call")
+    	  .methods("POST"_method)
+   ([](const crow::request& req){
+            cout << "lm call entered --------------\n";
 
-          return crow::response{"web server working...\n"};});
-#endif	 
+       	Json::Value body_json,params, result;
+       	auto x = crow::json::load(req.body);
+       	std::ostringstream x_os;
+       	x_os << x;
+       	string body_string=x_os.str();
+       	string method;
+        string agent;
+        
+
+       	Json::Reader reader;
+       	if(!reader.parse(body_string,body_json))
+        {
+       		return crow::response{"ERROR: parameters is invalid."};
+
+        }
+       	if((!body_json.isMember("params"))||(!body_json.isMember("method")) ||
+       			(!body_json["method"].isString()) || (!body_json["params"].isObject()))
+        {
+       		return crow::response{"ERROR: parameters is invalid."};
+
+        }
+       	method=body_json["method"].asString();
+       	params=body_json["params"]["url_params"];
+       	TETRIS_DEBUG("lm/call body = %s", body_json.toStyledString().c_str());
+       	if(LMProvideMethods.find(method)==LMProvideMethods.end())
+        {
+       		return crow::response{"ERROR: Not supported Method"};
+
+        }
+
+
+        
+//agent:// get divice id from param"agent"
+        string lm_idd;
+        lm_idd = lm_id;
+        agent = params["licagent"].asString();
+        if (!agent.empty()) lm_idd= agent;
+//device: licServer or licAgent
+        tetris::device::id the_server(lm_idd);
+
+        //cout << "server id = " << lm_id << lm_idd << agent << method<<endl ;
+// method:
+
+        method = body_json["params"]["url"].asString();
+// notify or call:
+        if (params["notify"].asString() =="yes")  
+        {
+            d->hp->notify(the_server, 0, method, params, string(), tetris::second_10); 
+            result["status"] = "OK";
+            cout << "result of call = " << result.toStyledString().c_str() << endl;
+            return crow::response{result.toStyledString()};
+        }
+        else
+        {
+            d->hp->call(the_server, 0, method, params, string(), tetris::second_10,result); 
+            //TETRIS_DEBUG("lm/call result = %s", result.toStyledString().c_str());
+             cout << "result of call = " << result.toStyledString().c_str() << endl;
+            return crow::response{result.toStyledString()};
+        }
  
+    });
+
 	CROW_ROUTE(app, "/job/call")
-    	.methods("POST"_method)
-        ([](const crow::request& req){
-   
-            cout <<"this is job call\n";
+    	  .methods("POST"_method)
+   ([](const crow::request& req){
+
        	Json::Value body_json,params, result;
        	auto x = crow::json::load(req.body);
        	std::ostringstream x_os;
@@ -141,7 +194,9 @@ void tetris_service_gateway::processRestfulCall(void) {
        	string method;
 
        	Json::Reader reader;
-       	if(!reader.parse(body_string,body_json)){
+       	if(!reader.parse(req.body,body_json)){
+       	//if(!reader.parse(body_string,body_json)){
+       		cout<<"1------------"<<endl;
        		return crow::response{"ERROR: parameters is invalid."};
        		}
        	if((!body_json.isMember("params"))||(!body_json.isMember("method")) ||
@@ -160,70 +215,6 @@ void tetris_service_gateway::processRestfulCall(void) {
        	TETRIS_DEBUG("jm/call result = %s", result.toStyledString().c_str());
        	return crow::response{result.toStyledString()};
     });
- 
-        // add cjh:
-        CROW_ROUTE(app, "/lm/call")
-    	  .methods("POST"_method)
-   ([](const crow::request& req){
-            cout << "lm call entered --------------\n";
-
-       	Json::Value body_json,params, result;
-       	auto x = crow::json::load(req.body);
-       	std::ostringstream x_os;
-       	x_os << x;
-       	string body_string=x_os.str();
-       	string method;
-        string agent;
-        cout << "param = " << body_string<<endl;
-        
-
-       	Json::Reader reader;
-       	if(!reader.parse(body_string,body_json)){
-       		return crow::response{"ERROR: parameters is invalid."};
-       		}
-       	if((!body_json.isMember("params"))||(!body_json.isMember("method")) ||
-       			(!body_json["method"].isString()) || (!body_json["params"].isObject())){
-       		return crow::response{"ERROR: parameters is invalid."};
-       		}
-       	method=body_json["method"].asString();
-       	params=body_json["params"]["url_params"];
-       	TETRIS_DEBUG("lm/call body = %s", body_json.toStyledString().c_str());
-       	if(LMProvideMethods.find(method)==LMProvideMethods.end()){
-       		return crow::response{"ERROR: Not supported Method"};
-       		}
-
-   
-        
-//agent:// get divice id from param"agent"
-        string lm_idd;
-        lm_idd = lm_id;
-        agent = params["licagent"].asString();
-        if (!agent.empty()) lm_idd= agent;
-//device: licServer or licAgent
-        tetris::device::id the_server(lm_idd);
-
-        cout << "server id = " << lm_id << lm_idd << agent << method<<endl ;
-// method:
-
-        method = body_json["params"]["url"].asString();
-// notify or call:
-        if (params["notify"].asString() =="yes")  
-        {
-            d->hp->notify(the_server, 0, method, params, string(), tetris::second_10); 
-            result["status"] = "OK";
-            cout << "result of call = " << result.toStyledString().c_str() << endl;
-            return crow::response{result.toStyledString()};
-        }
-        else
-        {
-            d->hp->call(the_server, 0, method, params, string(), tetris::second_10,result); 
-            TETRIS_DEBUG("lm/call result = %s", result.toStyledString().c_str());
-             cout << "result of call = " << result.toStyledString().c_str() << endl;
-            return crow::response{result.toStyledString()};
-        }
- 
-    });
-
 	CROW_ROUTE(app, "/sm/call")
     	  .methods("POST"_method)
    ([](const crow::request& req){
@@ -337,11 +328,11 @@ void tetris_service_gateway::processRestfulCall(void) {
 	should_exit = 1;
 }
 
- 
+
 
 int main (int argc, char *argv []){
 
- 
+
 	char * tetris_root=getenv("TETRIS_ROOT");
 	string tetrisRoot,un_use;
 	int portalPort=18080;
@@ -368,19 +359,13 @@ int main (int argc, char *argv []){
 	OpenSSL_add_all_algorithms ();
 	ERR_load_crypto_strings ();
 	init_ssl_locks ();
-string a1 = CA_CERT;
+
 	/* load the root certificate/private key */
 	if (!(ca_cert = tetris::pki::load_cert (cacert_file))) {
 		TETRIS_ERROR("ERROR: Cannot load the root cert.");
 		return -1;
 	}
 	signal (SIGINT, sighandler);
-        cout << "port= " << portalPort;
-
-      //  portalPort=18080;
-        int busport = 12310;
-
-       bus_options["unicast_port"] = (unsigned int)busport;
 
 	/*step1:init bus*/
 	/* create a new bus and initialize it */
@@ -411,7 +396,6 @@ string a1 = CA_CERT;
    /* this will detach/shutdown all devices automatically */
 	tetris::delete_bus (bus);
 	return 0;
-   
 }
 
-#endif /* TETRIS_PORTAL_HPP_ */{"url_param":{"method":"call","params":{"url":"report","url_params":{"report_param":"ALL"}}}}
+#endif /* TETRIS_PORTAL_HPP_ */

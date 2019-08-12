@@ -4,23 +4,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <tetris/device.hpp>
-#include "distributed_bus.hpp"
-#include "util.hpp"
 
 #include <dirent.h>
-#include <distributed_bus.hpp>
-#include <tetris/device.hpp>
 #include <signal.h>
-//#include <tetris/init_ssl.hpp>
 #include <json/json.h>
-//#include "tetris/global_setting.hpp"
+#include <boost/thread/thread.hpp>
+#include <boost/asio.hpp>
+#include <boost/shared_ptr.hpp>
 
-//debug setting
-//#include "umServer.hpp"
+#include <tetris/bus.hpp>
+#include <tetris/device.hpp>
+//#include <tetris/init_ssl.hpp>
+ 
 #include "noServer.hpp"
-//#include "LFileDate.h"
-//#define MY_PORTAL 1
+ 
 #if 0
 #define TETRISD_DEBUG_ENABLED			true
 #define debug_x(fmt,args...) \

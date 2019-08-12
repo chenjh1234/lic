@@ -509,13 +509,23 @@ QStringList NoServer::loginApp(QString vender, QString packName, QString version
    LEncrypt en;
    QString ip, user, hostname, pid;
    QStringList slist;
+   QString packid,dl;
 
    ip = _ip;
    user =  _user;
    hostname =  _hostname;
    pid =  _pid;
    if (appname == "")  appname = "null";
+   dl = "_";
+   packid =  vender + dl + packName ;// no number
 
+   // if the pack id login in this process mreturn the 1st result:
+
+   if ( mapLogin.contains(packid))  
+   {
+       slist = mapLogin[packid];
+       return slist;
+   }
 
    if (vender.length() <= 0 || packName.length() <= 0)  return slist;
 
@@ -563,6 +573,8 @@ QStringList NoServer::loginApp(QString vender, QString packName, QString version
    }
    //else
    //    cout << " loginApp error\n";
+   //register packid -result int map;
+   mapLogin[packid] = slist;
 
    return slist;
 }
@@ -819,7 +831,14 @@ QString NoServer::getDev(QString devid)
 
    Json::Value params, result;
    id = devid.Q2CH;
+   if(isPortal())
+   {
+       ret = "cannot getDev in portal mode\n";
+       return ret;
+   }
+   //cout <<"id=" << id<<endl;
    hp->get_devices(id,result);
+   //cout <<"id=" << id<<endl;
 // result:
    ret = result.toStyledString().c_str();;
    //cout <<result.toStyledString().c_str();

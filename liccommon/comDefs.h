@@ -3,29 +3,30 @@
 #define CLIENT_LIB_EXPORT Q_DECL_EXPORT
 #define SERVER_LIB_EXPORT Q_DECL_EXPORT
 //#include <json/json.h>
-#define CA_CERT "/s0/u/cjh/tetris/src/third/ca/cacert.pem"
-#define CA_KEY  "/s0/u/cjh/tetris/src/third/ca/cakey.pem"
 
-#define CA_CERT "/home/cjh/tetris/src/third/ca/cacert.pem"
-#define CA_KEY  "/home/cjh/tetris/src/third/ca/cakey.pem"
+//#define CA_CERT "/home/cjh/ca/cacert.pem"
+//#define CA_KEY  "/home/cjh/ca/cakey.pem"
 
-#define CA_CERT "/home/cjh/ca/cacert.pem"
-#define CA_KEY  "/home/cjh/ca/cakey.pem"
 //env:
 //LIC_ROOT_PATH
 // env for client:
 #define ENV_LIC_AGENT "LIC_AGENT" // is the agent device ID "5:0:1:0" is is not NULL will login to agent device
-#define ENV_PORTAL_IP "PORTAL_IP"   // if exist Noserver will connect portal
-#define ENV_PORTAL_PORT "PORTAL_PORT"
+//#define ENV_PORTAL_IP "PORTAL_IP"   // if exist Noserver will connect portal
+//#define ENV_PORTAL_PORT "PORTAL_PORT"
+
+#define ENV_PORTAL_IP "PORTALURL"   // if exist Noserver will connect portal
+#define ENV_PORTAL_PORT "RESTFULPORT"
+
 #define ENV_LIC_PROJECT "LIC_PROJECT"
 #define PORTAL_IP "localhost"
 #define PORTAL_PORT "18080"
+
 #define PORTAL 1 
 #define AGENT_PORT 38080
 // portal:
 #define CALL_NOTIFY "notify" // tell potal to start notify;
 #define LIC_URL "lm"
-#define LICA_URL "lma"
+//#define LICA_URL "lma"//no used now
 //command:
 #define CMD_LOADFILE "loadFile"
 #define CMD_UNLOADFILE "unloadFile"

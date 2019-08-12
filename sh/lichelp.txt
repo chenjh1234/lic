@@ -4,15 +4,15 @@ borrowreturn 	: return the borrowed license file
 ckey.sh      	: create pub$pri key files
 createkey    	: create pub$pri key files
 createlic    	: create a license file
-clearconfig   : clear config information in server;need a toDaypasswd;
-job10.sh     	: job test 
-licdev       	: start lic server
-licdevh         : show licdev manual
+clearconfig     : clear config information in server;need a toDaypasswd;
+job10.sh     	: job 10 test 
+jobs2.sh        : job 2 test 
+licman          : show licmanager manual
 licgen       	: create a license file GUI
 licgenh         : show licgen manual
 lic.sh       	: license ENV
 loadfile     	: load a license file to server
-loadconfig   :load config file to server
+loadconfig      : load config file to server
 mid          	: host identifier
 passwd2m     	: dynamic passwd in 2 minutes
 passwdtoday  	: dynamic passwd in today
@@ -21,13 +21,17 @@ reportlic    	: print the package and app info in the server
 rootaddmb.sh    : add multiply broadcaset address in root
 root.sh         : stop the firewall in root
 rootstopfire.sh : stop the firewall in root
-showdb       	: show db infomation
-showproof    	: show the prooffile of unloaded license file
 shutdownlic  	: shutdown license server
+startagent      : start lic agent
+startlic        : start lic server
 stjob        	: statistics the apps in a range of time
 stjobh          : show stjob manual
 testapi      	: test server API, for test use
 unloadfile   	: unload a license file
 unpack       	: unload or remove a license in server , for test use
 uuid         	: get a uuid string
-viewconfig   : print out the config information in server 
+viewconfig      : print out the config information in server 
+viewdb       	: show db infomation
+viewlog         : view log file of the server.parameter:e,p
+viewproof    	: show the prooffile of unloaded license file
+

@@ -75,10 +75,18 @@ bool ConfigMng::loadDB()
    qDebug() << " loaddb, file = " << dbfile;
    //open:
 //save to PTR:
-   if (!dbf.open(QIODevice::ReadOnly )) return DSTAT_FAILED;
-   QDataStream ds(&dbf);
-   ir = doDB(DO_LOADDB,ds);
-   dbf.close();
+   ir = 1;
+   if (!dbf.open(QIODevice::ReadOnly ))
+   {
+        qDebug() << "DB file no exist: " << dbfile;
+        qDebug() << "no Config DB loaded";
+   }
+   else
+   {
+       QDataStream ds(&dbf);
+       ir = doDB(DO_LOADDB,ds);
+       dbf.close();
+    }
 
    return ir;
 
