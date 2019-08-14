@@ -15,26 +15,17 @@ LIBS += \
 
  HEADERSSS +=  \
 	   SLicData.h \
-	   SLicMng.h \
-	   SAppMng.h \
-	   SAppInfo.h \
-	   SPackMng.h \
-	   SPackInfo.h \
-#	   SCycleThread.h \
-	   SLog.h 
+	   SAgent.h\
+	   SLicMng.h 
+ 
  
 
  SOURCES +=  \
 	   SLicMng.cpp \
-	   SAppInfo.cpp \
-	   SAppMng.cpp \
-	   SPackInfo.cpp \
-	   SPackMng.cpp \
 	   SLicData.cpp \
-#	   SCycleThread.cpp \
-	   DBstat.cpp\
-	   SAgent.cpp\
-	   SLog.cpp 
+#	   SCycleThread.cpp \  
+	   SAgent.cpp
+	   
  
  
 

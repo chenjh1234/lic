@@ -11,10 +11,21 @@ TARGET = licbase
 LIBS += -lssl
 
 # Input
-HEADERS +=  LInfoMng.h LLicFile.h LPackageMng.h LVenderMng.h LLicEncrypt.h LFileDate.h\	    
+HEADERS +=   SAppMng.h \
+	   SAppInfo.h \
+	   SPackMng.h \
+	   SPackInfo.h \
+	     SLog.h \
+	   LInfoMng.h LLicFile.h LPackageMng.h LVenderMng.h LLicEncrypt.h LFileDate.h\	    
 	 testG.h  LEncrypt.h LSummary.h 
 
 SOURCES +=  \
+	   SAppInfo.cpp \
+	   SAppMng.cpp \
+	   SPackInfo.cpp \
+	   SPackMng.cpp \
+	   DBstat.cpp\
+	   SLog.cpp \
            LInfoMng.cpp \
            LLicFile.cpp \
 	   LLicEncrypt.cpp \      
